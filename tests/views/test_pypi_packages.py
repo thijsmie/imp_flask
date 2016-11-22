@@ -1,12 +1,10 @@
 from flask import current_app
-from flask.ext.celery import CELERY_LOCK
 import pytest
 from redis.exceptions import LockError
 
-from pypi_portal.extensions import db, redis
-from pypi_portal.models.pypi import Package
-from pypi_portal.models.redis import POLL_SIMPLE_THROTTLE
-from pypi_portal.tasks import pypi
+from imp_flask.extensions import db, redis
+from imp_flask.models.pypi import Package
+from imp_flask.tasks import pypi
 
 
 class FakeDelay(object):
@@ -54,7 +52,7 @@ def test_sync_parallel(alter_xmlrpc):
     alter_xmlrpc([dict(name='packageD', summary='Test package.', version='3.0.0'), ])
     redis.delete(POLL_SIMPLE_THROTTLE)
 
-    redis_key = CELERY_LOCK.format(task_name='pypi_portal.tasks.pypi.update_package_list')
+    redis_key = CELERY_LOCK.format(task_name='imp_flask.tasks.pypi.update_package_list')
     lock = redis.lock(redis_key, timeout=1)
     assert lock.acquire(blocking=False)
 

@@ -1,8 +1,8 @@
 from datetime import timedelta
 import time
 
-from pypi_portal.core.email import send_email, send_exception
-from pypi_portal.extensions import mail, redis
+from imp_flask.core.email import send_email, send_exception
+from imp_flask.extensions import mail, redis
 
 
 def raise_and_send():

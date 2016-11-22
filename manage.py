@@ -1,22 +1,11 @@
 #!/usr/bin/env python2.7
-"""Main entry-point into the 'PyPI Portal' Flask and Celery application.
+"""Main entry-point into the 'Inventory management program' Flaskapplication.
 
-This is a demo Flask application used to show how I structure my large Flask
-applications.
-
-License: MIT
-Website: https://github.com/Robpol86/Flask-Large-Application-Example
+Structure based on: https://github.com/Robpol86/Flask-Large-Application-Example
 
 Command details:
     devserver           Run the application using the Flask Development
                         Server. Auto-reloads files when they change.
-    tornadoserver       Run the application with Facebook's Tornado web
-                        server. Forks into multiple processes to handle
-                        several requests.
-    celerydev           Starts a Celery worker with Celery Beat in the same
-                        process.
-    celerybeat          Run a Celery Beat periodic task scheduler.
-    celeryworker        Run a Celery worker process.
     shell               Starts a Python interactive shell with the Flask
                         application context.
     create_all          Only create database tables if they don't exist and
@@ -24,10 +13,6 @@ Command details:
 
 Usage:
     manage.py devserver [-p NUM] [-l DIR] [--config_prod]
-    manage.py tornadoserver [-p NUM] [-l DIR] [--config_prod]
-    manage.py celerydev [-l DIR] [--config_prod]
-    manage.py celerybeat [-s FILE] [--pid=FILE] [-l DIR] [--config_prod]
-    manage.py celeryworker [-n NUM] [-l DIR] [--config_prod]
     manage.py shell [--config_prod]
     manage.py create_all [--config_prod]
     manage.py (-h | --help)
@@ -39,14 +24,8 @@ Options:
                                 instead of stdout.
                                 Only ERROR statements will go to stdout. stderr
                                 is not used.
-    -n NUM --name=NUM           Celery Worker name integer.
-                                [default: 1]
-    --pid=FILE                  Celery Beat PID file.
-                                [default: ./celery_beat.pid]
     -p NUM --port=NUM           Flask will listen on this port number.
                                 [default: 5000]
-    -s FILE --schedule=FILE     Celery Beat schedule database file.
-                                [default: ./celery_beat.db]
 """
 
 from __future__ import print_function
@@ -57,15 +36,13 @@ import os
 import signal
 import sys
 
-from celery.app.log import Logging
-from celery.bin.celery import main as celery_main
 from docopt import docopt
 import flask
-from flask.ext.script import Shell
+from flask_script import Shell
 from tornado import httpserver, ioloop, web, wsgi
 
-from pypi_portal.application import create_app, get_config
-from pypi_portal.extensions import db
+from imp_flask.application import create_app, get_config
+from imp_flask.extensions import db
 
 OPTIONS = docopt(__doc__) if __name__ == '__main__' else dict()
 
@@ -136,9 +113,9 @@ def parse_options():
     """
     # Figure out which class will be imported.
     if OPTIONS['--config_prod']:
-        config_class_string = 'pypi_portal.config.Production'
+        config_class_string = 'imp_flask.config.Production'
     else:
-        config_class_string = 'pypi_portal.config.Config'
+        config_class_string = 'imp_flask.config.Config'
     config_obj = get_config(config_class_string)
 
     return config_obj
@@ -185,59 +162,6 @@ def devserver():
     fsh_folder = app.blueprints['flask_statics_helper'].static_folder
     log_messages(app, OPTIONS['--port'], fsh_folder)
     app.run(host='0.0.0.0', port=int(OPTIONS['--port']))
-
-
-@command
-def tornadoserver():
-    setup_logging('tornadoserver')
-    app = create_app(parse_options())
-    fsh_folder = app.blueprints['flask_statics_helper'].static_folder
-    log_messages(app, OPTIONS['--port'], fsh_folder)
-
-    # Setup the application.
-    container = wsgi.WSGIContainer(app)
-    application = web.Application([
-        (r'/static/flask_statics_helper/(.*)', web.StaticFileHandler, dict(path=fsh_folder)),
-        (r'/(favicon\.ico)', web.StaticFileHandler, dict(path=app.static_folder)),
-        (r'/static/(.*)', web.StaticFileHandler, dict(path=app.static_folder)),
-        (r'.*', web.FallbackHandler, dict(fallback=container))
-    ])  # From http://maxburstein.com/blog/django-static-files-heroku/
-    http_server = httpserver.HTTPServer(application)
-    http_server.bind(OPTIONS['--port'])
-
-    # Start the server.
-    http_server.start(0)  # Forks multiple sub-processes
-    ioloop.IOLoop.instance().start()
-
-
-@command
-def celerydev():
-    setup_logging('celerydev')
-    app = create_app(parse_options(), no_sql=True)
-    Logging._setup = True  # Disable Celery from setting up logging, already done in setup_logging().
-    celery_args = ['celery', 'worker', '-B', '-s', '/tmp/celery.db', '--concurrency=5']
-    with app.app_context():
-        return celery_main(celery_args)
-
-
-@command
-def celerybeat():
-    setup_logging('celerybeat')
-    app = create_app(parse_options(), no_sql=True)
-    Logging._setup = True
-    celery_args = ['celery', 'beat', '-C', '--pidfile', OPTIONS['--pid'], '-s', OPTIONS['--schedule']]
-    with app.app_context():
-        return celery_main(celery_args)
-
-
-@command
-def celeryworker():
-    setup_logging('celeryworker{}'.format(OPTIONS['--name']))
-    app = create_app(parse_options(), no_sql=True)
-    Logging._setup = True
-    celery_args = ['celery', 'worker', '-n', OPTIONS['--name'], '-C', '--autoscale=10,1', '--without-gossip']
-    with app.app_context():
-        return celery_main(celery_args)
 
 
 @command

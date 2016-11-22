@@ -5,7 +5,6 @@ default:
 	@echo "Local examples:"
 	@echo "    make run        # Starts a Flask development server locally."
 	@echo "    make shell      # Runs 'manage.py shell' locally with iPython."
-	@echo "    make celery     # Runs one development Celery worker with Beat."
 	@echo "    make style      # Check code styling with flake8."
 	@echo "    make lint       # Runs PyLint."
 	@echo "    make test       # Tests entire application with pytest."
@@ -20,9 +19,6 @@ run:
 
 shell:
 	./manage.py shell
-
-celery:
-	./manage.py celerydev
 
 style:
 	flake8 --max-line-length=120 --statistics pypi_portal

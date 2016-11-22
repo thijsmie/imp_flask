@@ -1,6 +1,6 @@
-from pypi_portal.extensions import db
-from pypi_portal.models.helpers import count
-from pypi_portal.models.pypi import Package
+from imp_flask.extensions import db
+from imp_flask.models.helpers import count
+from imp_flask.models.pypi import Package
 
 
 def test_count():

@@ -2,8 +2,8 @@ import xmlrpclib
 
 import pytest
 
-from pypi_portal.application import create_app, get_config
-from pypi_portal.extensions import db
+from imp_flask.application import create_app, get_config
+from imp_flask.extensions import db
 
 
 class FakeServerProxy(object):
@@ -43,4 +43,4 @@ def alter_xmlrpc(request):
 
 # Initialize the application and sets the app context to avoid needing 'with app.app_context():'.
 # This must happen before any Celery tasks are imported automatically by py.test during test discovery.
-create_app(get_config('pypi_portal.config.Testing')).app_context().push()
+create_app(get_config('imp_flask.config.Testing')).app_context().push()
