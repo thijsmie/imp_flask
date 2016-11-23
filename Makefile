@@ -21,19 +21,19 @@ shell:
 	./manage.py shell
 
 style:
-	flake8 --max-line-length=120 --statistics pypi_portal
+	flake8 --max-line-length=120 --statistics imp_flask
 
 lint:
-	pylint --max-line-length=120 pypi_portal
+	pylint --max-line-length=120 imp_flask
 
 test:
-	py.test --cov-report term-missing --cov pypi_portal tests
+	py.test --cov-report term-missing --cov imp_flask tests
 
 testpdb:
 	py.test --pdb tests
 
 testcovweb:
-	py.test --cov-report html --cov pypi_portal tests
+	py.test --cov-report html --cov imp_flask tests
 	open htmlcov/index.html
 
 pipinstall: isvirtualenv
