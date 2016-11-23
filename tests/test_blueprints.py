@@ -3,7 +3,7 @@ import importlib
 from flask import Blueprint
 import pytest
 
-from imp_flask.blueprints import _factory, all_blueprints
+from imp_flask.blueprints import blueprint_factory, all_blueprints
 
 
 def test_blueprint_instances():
@@ -19,10 +19,10 @@ def test_importable():
 
 def test_factory_bad():
     with pytest.raises(ImportError):
-        _factory('test.123', '/test/123')
+        blueprint_factory('test.123', '/test/123')
 
 
 def test_factory():
-    bp = _factory('home.index', '/test/123')
+    bp = blueprint_factory('home.index', '/test/123')
     assert 'imp_flask.views.home.index' == bp.import_name
     assert '/test/123' == bp.url_prefix

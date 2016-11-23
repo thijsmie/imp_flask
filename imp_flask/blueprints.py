@@ -7,7 +7,7 @@ URL paths are defined here as well.
 from flask import Blueprint
 
 
-def _factory(partial_module_string, url_prefix):
+def blueprint_factory(partial_module_string, url_prefix):
     """Generates blueprint objects for view modules.
 
     Positional arguments:
@@ -25,10 +25,12 @@ def _factory(partial_module_string, url_prefix):
     return blueprint
 
 
-examples_alerts = _factory('examples.alerts', '/examples/alerts')
-examples_exception = _factory('examples.exception', '/examples/exception')
-home_index = _factory('home.index', '/')
-pypi_packages = _factory('pypi.packages', '/pypi')
+home_index = blueprint_factory('home.index', '/')
+relations = blueprint_factory('imp_flask.relations', '/relations')
+transactions = blueprint_factory('imp_flask.transactions', '/transactions')
+products = blueprint_factory('imp_flask.products', '/products')
+pos = blueprint_factory('imp_flask.pos', '/pos')
+conscribo = blueprint_factory('imp_flask.conscribo', '/conscribo')
+settings = blueprint_factory('imp_flask.settings', '/settings')
 
-
-all_blueprints = (examples_alerts, examples_exception, home_index, pypi_packages,)
+all_blueprints = (home_index, relations, transactions, products, conscribo, settings,)
