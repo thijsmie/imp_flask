@@ -139,9 +139,10 @@ class TransactionRow(Base):
     product_id = Column(ForeignKey('product.id'))
 
     amount = Column(Integer)
+    prevalue = Column(Integer)
     value = Column(Integer)
 
-    exclude_mods = many_to_many('excludemods', 'TransactionRow', 'Mod')
+    includes_mods = many_to_many('includemods', 'TransactionRow', 'Mod')
 
     def __init__(self, transaction, product):
         self.transaction = transaction
@@ -211,11 +212,11 @@ class Mod(Base):
         # The mod is already included in the value, we would just like to know it's total
         # Note: this is inexact science, since value might be rounded, so the error
         # scales with the multiplier and possible decimals in post and pre-add
-        ovalue = value - self.post_add * amount
-        ovalue /= self.multiplier
-        ovalue -= self.pre_add * amount
-        dvalue = value - ovalue
-        return value, dvalue
+        original_value = value - self.post_add * amount
+        original_value /= self.multiplier
+        original_value -= self.pre_add * amount
+        delta_value = value - original_value
+        return value, delta_value
 
     def apply_excluded(self, amount, value):
         nvalue = (value + self.pre_add * amount) * self.multiplier + self.post_add * amount

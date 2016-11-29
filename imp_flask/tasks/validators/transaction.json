@@ -1,0 +1,29 @@
+{
+    "type": "object",
+    "properties": {
+        "eventname": {"type": "string"},
+        "eventdate": {"type": "string"},
+        "eventcontact": {"type": "string"},
+        "eventnotes": {"type": "string"},
+        "relation": {"type": "integer"},
+        "rows": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "type": {"type": "string", "enum": ["gain", "lose"]},
+                    "product": {"type": "integer"},
+                    "amount":  {"type": "integer"},
+                    "value":   {"type": "integer"},
+                    "exclude_mods":    {
+                        "type": "array",
+                        "items": {"type": "integer"}
+                        }
+                },
+                "required": ["product", "amount", "type"]
+            }
+        }
+    },
+    "required": ["eventname", "eventdate", "eventcontact", "relation", "rows"]
+}
