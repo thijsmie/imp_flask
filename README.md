@@ -38,9 +38,12 @@ The projects structure is derived from the [Flask-Large-Application-Example](htt
 │  │  └─ css/
 │  │
 │  ├─ tasks/          # Input data processes.
+│  │
 │  ├─ templates/      # Base templates used/included throughout the app.
 │  │  ├─ 404.html
 │  │  └─ base.html
+│  │
+│  ├─ validators/          # json structures for apicalls
 │  │
 │  ├─ views/
 │  │  ├─ view1/
