@@ -1,0 +1,14 @@
+{
+    "type": "object",
+    "properties": {
+        "index": {"type": "integer"},
+        "product": {"type": "integer"},
+        "amount":  {"type": "integer"},
+        "prevalue":   {"type": "integer"},
+        "includes_mods": {
+            "type": "array", 
+            "items": {"type": "integer"}
+        }
+    },
+    "required": ["index"]
+}

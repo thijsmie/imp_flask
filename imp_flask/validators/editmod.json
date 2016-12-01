@@ -1,0 +1,12 @@
+{
+    "type": "object",
+    "properties": {
+        "index":      {"type": "integer"},
+        "name":       {"type": "string"},
+        "pre_add":    {"type": "integer"},
+        "multiplier": {"type": "number"},
+        "post_add":   {"type": "integer"},
+        "included":   {"type": "boolean"}
+    },
+    "required": ["index"]
+}

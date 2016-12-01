@@ -1,0 +1,12 @@
+{
+    "type": "object",
+    "properties": {
+        "username": {"type": "string"},
+        "password": {"type": "string"},
+        "email": {"type": "string"},
+        "relation": {"type": "integer"},
+        "pos": {"type": "integer"},
+        "admin": {"type": "boolean"}
+    },
+    "required": ["username", "password", "email"]
+}

@@ -1,0 +1,14 @@
+{
+    "type": "object",
+    "properties": {
+        "index":    {"type": "integer"},
+        "name":     {"type": "string"},
+        "email":    {"type": "string"},
+        "budget":   {"type": "integer"},
+        "send_transaction":         {"type": "boolean"},
+        "send_transaction_updates": {"type": "boolean"},
+        "send_budget_warnings":     {"type": "boolean"}
+    },
+    "required": ["index"]
+}
+
