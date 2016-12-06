@@ -77,3 +77,8 @@ The projects structure is derived from the [Flask-Large-Application-Example](htt
 You will notice that a 'productbucket' is almost the same as a 'transaction'. This is because in some abstract view, inventory in a transaction is basically
 just inventory of someone else. A selling and buying transaction is the same thing, but with a minus sign. To avoid confusion, a negative amount is always a loss
 and a positive amount is always a gain.
+
+## Latex templating with jinja2
+
+All invoices and other documents are rendered with [jinja2](http://jinja.pocoo.org/) with aggressive input escaping to prevent attacks using, for example, \usepackage{python}. It also allows 
+users to include special characters in product names, eventnames and whatever else they want.

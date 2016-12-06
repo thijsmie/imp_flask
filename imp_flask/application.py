@@ -14,6 +14,7 @@ from imp_flask.extensions import db, mail
 
 APP_ROOT_FOLDER = os.path.abspath(os.path.dirname(app_root.__file__))
 TEMPLATE_FOLDER = os.path.join(APP_ROOT_FOLDER, 'templates')
+TEXTEMPLATE_FOLDER = os.path.join(APP_ROOT_FOLDER, 'textemplates')
 STATIC_FOLDER = os.path.join(APP_ROOT_FOLDER, 'static')
 
 

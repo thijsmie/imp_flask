@@ -69,7 +69,7 @@ def send_exception(subject):
     mail.send(msg)
 
 
-def send_email(subject, body=None, html=None, recipients=None):
+def send_email(subject, body=None, html=None, recipients=None, attachments=None, bcc=None):
     """Send an email.
 
     Positional arguments:
@@ -80,9 +80,14 @@ def send_email(subject, body=None, html=None, recipients=None):
     html -- the body of the email, can be HTML (overrides body).
     recipients -- list or set (not string) of email addresses to send the email to. Defaults to the ADMINS list in the
         Flask config.
-    throttle -- time in seconds or datetime.timedelta object between sending identical emails.
+    attachments -- list of attachments to add to the email. Must include filename, mimetype and data.
     """
     recipients = recipients or current_app.config['ADMINS']
 
-    msg = Message(subject=subject, recipients=recipients, body=body, html=html)
+    msg = Message(subject=subject, recipients=recipients, body=body, html=html, bcc=bcc)
+
+    if attachments is not None:
+        for at in attachments:
+            msg.attach(at["filename"], at["mimetype"], at["data"])
+
     mail.send(msg)

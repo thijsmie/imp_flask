@@ -1,8 +1,9 @@
 """Holds all transaction and product data"""
 
-from sqlalchemy import Column, String, Text, Integer, Float, Boolean, DateTime, ForeignKey, func
+from sqlalchemy import Column, String, Text, Integer, Float, Boolean, DateTime, ForeignKey, Enum, func
 from sqlalchemy.orm import relationship
 from imp_flask.models.helpers import Base, many_to_many
+from math import floor, ceil
 
 
 def sign(num):
@@ -194,6 +195,7 @@ class Mod(Base):
     multiplier = Column(Float)
     post_add = Column(Integer)
     included = Column(Boolean)
+    rounding = Column(Enum('floor', 'ceil', 'round', 'none'))
 
     def __init__(self, name, pre_add, multiplier, post_add, included):
         self.name = name
@@ -211,15 +213,30 @@ class Mod(Base):
     def apply_included(self, amount, value):
         # The mod is already included in the value, we would just like to know it's total
         # Note: this is inexact science, since value might be rounded, so the error
-        # scales with the multiplier and possible decimals in post and pre-add
+        # scales with the multiplier.
         original_value = value - self.post_add * amount
         original_value /= self.multiplier
+
+        # Rounding the wrong way when reversing operation yields best result.
+        if self.rounding is 'floor':
+            original_value = ceil(original_value)
+        elif self.rounding is 'ceil':
+            original_value = floor(original_value)
+        elif self.rounding is 'round':
+            original_value = round(original_value)
+
         original_value -= self.pre_add * amount
         delta_value = value - original_value
         return value, delta_value
 
     def apply_excluded(self, amount, value):
         nvalue = (value + self.pre_add * amount) * self.multiplier + self.post_add * amount
+        if self.rounding is 'floor':
+            nvalue = floor(nvalue)
+        elif self.rounding is 'ceil':
+            nvalue = ceil(nvalue)
+        elif self.rounding is 'round':
+            nvalue = round(nvalue)
         dvalue = nvalue - value
         return nvalue, dvalue
 

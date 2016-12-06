@@ -1,0 +1,38 @@
+\documentclass[a4paper]{article}
+
+\usepackage{graphicx}
+\usepackage{marvosym}
+\usepackage{ifthen}
+\usepackage[utf8]{inputenc}
+\usepackage{href}
+\pagestyle{empty}
+
+\begin{document}
+(% if header is defined%)
+    \flushright
+    \includegraphics[width=5cm]{((% header.image | escape_tex %))} \\
+    ((% header.text | escape_tex%))
+    \flushleft
+(% endif%)
+(% if details is defined %)
+    \begin{tabular}{l l}
+        (% for key in details %)
+            \textit{ ((% key | excape_tex %)) } & ((% details[key] | escape_tex %)) \\
+        (% endfor )
+    \end{tabular}
+(% endif %)
+\vspace{1cm}
+(% block content %)
+
+
+(% endblock %)
+(% if footer is defined %)
+\vfill
+\hline
+\begin{center}
+\footnotesize
+((% footer | escape_tex %)) \\
+This document was rendered by \url{https://github.com/thijsmie/imp}{IMP} on \today.
+\end{center}
+(% endif %)
+\end{document}

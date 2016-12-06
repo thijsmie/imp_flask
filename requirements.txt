@@ -10,3 +10,4 @@ six>=1.7.3
 tornado>=4.0
 simplejson>=3.8.2
 jsonschema>=2.5.1
+latex>=0.6.4

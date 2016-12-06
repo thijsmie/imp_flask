@@ -4,6 +4,7 @@ To be imported by the application.current_app() factory.
 """
 
 import locale
+
 from logging import getLogger
 
 from flask import current_app, render_template, request
@@ -107,3 +108,4 @@ def average_key(value, key):
     """
     values = [r.get(key, 0) if hasattr(r, 'get') else getattr(r, key, 0) for r in value]
     return float(sum(values)) / (len(values) or float('nan'))
+
