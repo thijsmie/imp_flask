@@ -1,6 +1,6 @@
 # Please note that the PyCharm IDE reports the following line as a broken import, it is not.
 from six.moves.urllib.parse import quote_plus
-
+import simplejson as json
 
 class HardCoded(object):
     """Constants used throughout the application.
@@ -43,3 +43,6 @@ class Production(Config):
     ADMINS = ['imp@tmiedema.com']
     MAIL_SUPPRESS_SEND = False
     STATICS_MINIFY = True
+
+with open('strings.json') as fp:
+    strings = json.load(fp)
