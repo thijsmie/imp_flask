@@ -12,5 +12,6 @@
   "_eventnumber": "Volgnummer",
   "_eventname": "Gelegenheid",
   "_eventdate": "Leverdatum",
-  "_eventcontact": "Verantwoordelijke"
+  "_eventcontact": "Verantwoordelijke",
+  "_revision": "Versie"
 }

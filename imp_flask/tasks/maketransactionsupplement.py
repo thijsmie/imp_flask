@@ -10,8 +10,8 @@ class TransactionSupplement:
             "_eventnumber": transaction.eventnumber,
             "_eventname": transaction.eventname,
             "_eventdate": transaction.eventdate.strftime("%Y-%m-%d"),
-            "_eventcontact": transaction.eventcontact
-            # (TODO) "_revision": transaction.revision
+            "_eventcontact": transaction.eventcontact,
+            "_revision": transaction.revision
         }
 
 

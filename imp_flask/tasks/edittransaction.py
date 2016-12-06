@@ -38,4 +38,6 @@ def edittransaction(data):
         else:
             raise ShouldBeImpossibleException()
 
+    transaction.revision += 1
+
     return transaction

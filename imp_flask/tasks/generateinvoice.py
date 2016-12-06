@@ -14,7 +14,7 @@ def generateinvoice(transaction, verbose=True):
                                          modtotals=supplement.modtotals,
                                          details=supplement.details)
     else:
-        invoice = texenv.render_template('invoice_verbose.tex',
+        invoice = texenv.render_template('invoice.tex',
                                          strings=strings,
                                          total=supplement.total,
                                          grouptotals=supplement.grouptotals,

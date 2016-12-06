@@ -1,6 +1,6 @@
 """Holds all transaction and product data"""
 
-from sqlalchemy import Column, String, Text, Integer, Float, Boolean, DateTime, ForeignKey, Enum, func
+from sqlalchemy import Column, String, Text, Integer, Float, Boolean, DateTime, ForeignKey, Enum, Table, func
 from sqlalchemy.orm import relationship
 from imp_flask.models.helpers import Base, many_to_many
 from imp_flask.tasks.rowapplymods import rowapplymods
@@ -75,6 +75,8 @@ class Transaction(Base):
     eventcontact = Column(String(80))
     eventnotes = Column(Text)
 
+    revision = Column(Integer)
+
     relation_id = Column(ForeignKey('relation.id'))
     rows = relationship('TransactionRow', backref='transaction', lazy='dynamic')
 
@@ -84,6 +86,7 @@ class Transaction(Base):
         self.eventcontact = eventcontact
         self.eventnotes = ""
         self.relation = relation
+        self.revision = 0
         previous = Transaction.query.filter_by(relation=self.relation, eventnumber=func.max(Transaction.eventnumber))
         if previous is None:
             self.eventnumber = 1
@@ -237,5 +240,22 @@ class User(Base):
     passhash = Column(String(256))
     admin = Column(Boolean)
 
-    relation_id = Column('relation.id')
+    relation_id = Column(ForeignKey('relation.id'))
     relation = relationship('Relation', lazy='dynamic')
+
+
+class RecipePart(Base):
+    product_id = Column(ForeignKey('product.id'))
+    amount = Column(Integer)
+
+
+class InputRecipe(Base):
+    """"Make a special input that creates multiple products. Note: only one item may have variable cost."""
+    input = Column(String(80))
+    outputs = many_to_many('inputs', 'Recipe', 'RecipePart')
+
+
+class OutputRecipe(Base):
+    """"Make a special output that needs multiple products. Note: will do some ugly rounding."""
+    output = Column(String(80))
+    inputs = many_to_many('inputs', 'Recipe', 'RecipePart')
