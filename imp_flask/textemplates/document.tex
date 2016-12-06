@@ -17,7 +17,11 @@
 (% if details is defined %)
     \begin{tabular}{l l}
         (% for key in details %)
-            \textit{ ((% key | excape_tex %)) } & ((% details[key] | escape_tex %)) \\
+            (% if key.startswith('_') %)
+                \textit{ ((% strings[key] | excape_tex %)) } & ((% details[key] | escape_tex %)) \\
+            (% else %)
+                \textit{ ((% key | excape_tex %)) } & ((% details[key] | escape_tex %)) \\
+            (% endif %)
         (% endfor )
     \end{tabular}
 (% endif %)

@@ -7,5 +7,10 @@
   "Subtotal": "Subtotaal",
   "Prevalue": "Exclusief",
   "Mods": "Bewerkingen",
-  "Tags": "Tags"
+  "Tags": "Tags",
+  "_relation": "Relatie",
+  "_eventnumber": "Volgnummer",
+  "_eventname": "Gelegenheid",
+  "_eventdate": "Leverdatum",
+  "_eventcontact": "Verantwoordelijke"
 }

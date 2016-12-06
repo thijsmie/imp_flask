@@ -3,6 +3,7 @@
 from sqlalchemy import Column, String, Text, Integer, Float, Boolean, DateTime, ForeignKey, Enum, func
 from sqlalchemy.orm import relationship
 from imp_flask.models.helpers import Base, many_to_many
+from imp_flask.tasks.rowapplymods import rowapplymods
 from math import floor, ceil
 
 
@@ -37,7 +38,7 @@ class Product(Base):
     def __init__(self):
         pass
 
-    def lose(self, amount, value=None):
+    def lose(self, amount):
         if amount <= 0:
             raise IllegalProductAdaption("Incorrect call of function 'lose', amount cannot be zero/negative.")
 
@@ -46,10 +47,6 @@ class Product(Base):
 
         if self.value_constant:
             dvalue = amount * self.value
-        elif value is not None:
-            if value > self.value:
-                raise IllegalProductAdaption(str(self) + "would have negative value.")
-            dvalue = value
         else:
             dvalue = round(amount / self.amount * self.value)
 
@@ -69,21 +66,6 @@ class Product(Base):
             self.value += value
             self.amount += amount
         return value
-
-    def change_value(self, dvalue):
-        if self.value_constant:
-            return self.value * self.amount
-        if sign(self.value + dvalue) != sign(self.value) or self.value + dvalue == 0:
-            raise IllegalRowAdaption("The value of " + str(self) + " would change sign.")
-        self.value += dvalue
-        return self.value
-
-    def change_amount(self, damount):
-        if sign(self.amount + damount) != sign(self.amount) or self.amount + damount == 0:
-            if not (self.allow_negative and self.value_constant):
-                raise IllegalRowAdaption("The value of " + str(self) + " would change sign.")
-        self.amount += damount
-        return self.amount
 
 
 class Transaction(Base):
@@ -108,29 +90,25 @@ class Transaction(Base):
         else:
             self.eventnumber = previous.eventnumber + 1
 
-    def lose(self, product, amount, value=None):
+    def lose(self, product, amount, mods):
         for row in self.rows:
-            if row.product == product:
-                value = row.lose(amount, value)
+            if row.product == product and row.includes_mods == mods:
+                value = row.lose(amount)
                 break
         else:
-            value = TransactionRow(self, product).lose(amount, value)
+            value = TransactionRow(self, product, mods).lose(amount)
 
         return value
 
-    def gain(self, product, amount, value):
+    def gain(self, product, amount, value, mods):
         for row in self.rows:
-            if row.product == product:
+            if row.product == product and row.includes_mods == mods:
                 value = row.gain(amount, value)
                 break
         else:
-            value = TransactionRow(self, product).gain(amount, value)
+            value = TransactionRow(self, product, mods).gain(amount, value)
 
         return value
-
-
-class IllegalRowAdaption(Exception):
-    pass
 
 
 class TransactionRow(Base):
@@ -145,38 +123,28 @@ class TransactionRow(Base):
 
     includes_mods = many_to_many('includemods', 'TransactionRow', 'Mod')
 
-    def __init__(self, transaction, product):
+    def __init__(self, transaction, product, mods):
         self.transaction = transaction
         transaction.rows.append(self)
+        self.includes_mods = mods
         self.product = product
         self.value = 0
         self.amount = 0
 
-    def lose(self, amount, value=None):  # selling more, buying less
-        dvalue = self.product.lose(amount, value)
-        self.value -= dvalue
+    def lose(self, amount):  # selling more, buying less
+        dvalue = self.product.lose(amount)
+        self.prevalue -= dvalue
         self.amount -= amount
+        rowapplymods(self)
         return dvalue
 
     def gain(self, amount, value):  # selling less, buying more
         self.amount += amount
-        self.value += value
-        self.product.gain(amount, value)
+        self.prevalue += value
+        currvalue = self.value
+        rowapplymods(self)
+        self.product.gain(amount, self.value - currvalue)
         return value
-
-    def change_value(self, value):
-        dvalue = self.value - value
-        self.product.change_value(dvalue)
-        self.value = value
-        return dvalue
-
-    def change_amount(self, amount):
-        if sign(amount) != sign(self.amount) or amount == 0:
-            raise IllegalRowAdaption("The amount of " + str(self) + " would change sign.")
-        damount = self.amount - amount
-        self.product.change_amount(damount)
-        self.amount = amount
-        return damount
 
     def delete(self):
         if self.value < 0:
@@ -186,11 +154,14 @@ class TransactionRow(Base):
             self.product.change_value(-self.value)
         elif self.amount != 0:
             self.product.change_amount(-self.amount)
+        self.amount = 0
+        self.value = 0
 
 
 class Mod(Base):
     # nvalue = (ovalue + pre_add * amount)*multiplier + post_add * amount
-    name = Column(String)
+    name = Column(String(64))
+    tag = Column(String(16))
     pre_add = Column(Integer)
     multiplier = Column(Float)
     post_add = Column(Integer)

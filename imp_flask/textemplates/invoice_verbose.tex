@@ -1,0 +1,25 @@
+(% extends "document.tex" %)
+(% block content %)
+\begin{tabular}{p{6cm} c c r r}
+\textit{((% strings.Product | escape_tex %))} & \textit{((% strings.Amount | escape_tex %))} & \textit{((% strings.Prevalue | escape_tex  %))}} & \textit{((% strings.Mods | escape_tex  %))}} & \textit{((% strings.Value | escape_tex  %))}} \\
+\hline
+(% for row in transaction.rows %)
+    ((% row.product.name | escape_tex %)) & ((% row.amount | escape_tex %)) & '{0:.2f}'.format(row.prevalue / 100.0)' &
+    (% for mod in row.includes_mods %) ((% mod.tag %)) (% endfor %) & {0:.2f}'.format(row.value / 100.0) \\
+(% endfor %)
+\hline
+\textit{((% strings.Group %))} & & \textit{((% strings.Value %))}
+(% for row in grouptotals %)
+    \textbf{((% row.name | escape_tex %))} & & & & ((% strings.Currency %))((% '{0:.2f}'.format(row.value / 100.0) %)) \\
+(% endfor %)
+\hline
+\textit{((% strings.Mods %))} & \textit{((% strings.Tags %))} & \textit{((% strings.Value %))}
+(% for row in modtotals %)
+    \textbf{((% row.name | escape_tex %))} & & & & ((% strings.Currency %))((% '{0:.2f}'.format(row.value / 100.0) %)) \\
+(% endfor %)
+\hline
+\textbf{((% strings.Total %))} & & ((% strings.Currency %))((% '{0:.2f}'.format(subtotal / 100.0) %)) & & ((% strings.Currency %))((% '{0:.2f}'.format(total / 100.0) %)) \\
+\end{tabular}
+\vspace{0.3cm}
+((% info %))
+(% endblock %)
