@@ -13,7 +13,9 @@ class PosSellable(Base):
     pos = relationship('posinstance')
     product_id = Column(ForeignKey('product.id'))
     product = relationship('product')
+    string_product = Column(String(80))
     price = Column(Integer)
+    identifier = Column(String(256))
 
 
 class PosSale(Base):
@@ -21,3 +23,4 @@ class PosSale(Base):
     pos_sellable = relationship('possellable')
     timeofsale = Column(DateTime)
     amount = Column(Integer)
+    value = Column(Integer)
