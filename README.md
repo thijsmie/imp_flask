@@ -82,3 +82,32 @@ and a positive amount is always a gain.
 
 All invoices and other documents are rendered with [jinja2](http://jinja.pocoo.org/) with aggressive input escaping to prevent attacks using, for example, \usepackage{python}. It also allows 
 users to include special characters in product names, eventnames and whatever else they want.
+
+## Inventory management implementation choices
+
+### Price Calculation
+
+With IMP the way prices are calculated differs from madmin in a significant way. There is no separate entity for a product and its inventory. That way, there is no way to tell where a product came from once it is in the database
+This makes sense in the way that if you have two bottles of cola, they are interchangeable. Of course, there is a sell-by date, but that kind of micromanagement is beyond the scope of this system and happens "on the floor".
+It also makes pricing fairer. The price of an amount of a certain product is just the fraction of the total amount times the total value. This means that no rounding errors can get lost in the system and that if you buy
+items on offer the price is reduced for all items you have, instead of it being a lottery for the parties who buy from you.
+
+### Modifying Transactions
+
+In madmin transactions were basically immutable. This caused many problems, since mistakes happen ([pebcak](https://en.wiktionary.org/wiki/PEBCAK)). Therefore IMP moves to the other end of the spectrum. A transaction is editable
+in an easy way, invoices get resent and changes are pushed to Conscribo with the press of a button.
+
+### Point of Sale
+
+Maintaining everything on your own is a tremendous amount of work. Anything that the system can handle for you is nice. So why not let the people who sell stuff for you enter the sales directly? It keeps a nice backlog of
+it so you have control over what goes into the database and what does not.
+
+### Inventory Correction
+
+Even if your documentation is perfect, your numbers are impeccable and your helpers are perfect humans, the total count of inventory you have at when you count it will never match up to what IMP says. Theft, spoiling, losses and
+quantum fluctuations will mess it up 100% of the time. Correcting inventory by hand is a chore and can go wrong easily, so IMP does it for you. IMP will also remember previous corrections and will notice when you may have
+found some inventory you lost before and will take that into account. Of course, this is also pushed to Conscribo.
+
+### Future Proofing
+
+VAT-based bookkeeping? Weird margins on products? Transport costs? Locked prices? Brewing your own beer? New vending machine? IoT-enabled vending machines? Automatic product orders? You name it.
