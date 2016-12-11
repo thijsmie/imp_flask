@@ -50,9 +50,9 @@ def many_to_many(name, fromtable, totable):
     lfromtable = fromtable.lower()
     ltotable = totable.lower()
     table = db.Table(name,
-                     Column(ltotable + '_id', Integer, ForeignKey(totable + '.id')),
-                     Column(lfromtable + '_id', Integer, ForeignKey(fromtable + '.id'))
+                     Column(ltotable + '_id', Integer, ForeignKey(ltotable + '.id')),
+                     Column(lfromtable + '_id', Integer, ForeignKey(lfromtable + '.id'))
                      )
 
     return relationship(totable, secondary=table,
-                        backref=backref(lfromtable + 's', lazy='dynamic'))
+                        backref=backref(name + '_' + lfromtable + 's', lazy='dynamic'))

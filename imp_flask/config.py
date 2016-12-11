@@ -1,6 +1,7 @@
 # Please note that the PyCharm IDE reports the following line as a broken import, it is not.
 from six.moves.urllib.parse import quote_plus
 import simplejson as json
+import os
 
 class HardCoded(object):
     """Constants used throughout the application.
@@ -9,13 +10,12 @@ class HardCoded(object):
     extensions goes here.
     """
     ADMINS = ['imp@tmiedema.com']
-    DB_MODELS_IMPORTS = ('imp',)
+    DB_MODELS_IMPORTS = ('imps',)
     ENVIRONMENT = property(lambda self: self.__class__.__name__)
-    MAIL_EXCEPTION_THROTTLE = 24 * 60 * 60
-    _SQLALCHEMY_DATABASE_DATABASE = 'imp_flask'
-    _SQLALCHEMY_DATABASE_HOSTNAME = 'localhost'
-    _SQLALCHEMY_DATABASE_PASSWORD = 'impp@ssword'
-    _SQLALCHEMY_DATABASE_USERNAME = 'impservice'
+    _SQLALCHEMY_DATABASE_DATABASE = 'imp_flask_db'
+    _SQLALCHEMY_DATABASE_HOSTNAME = 'db4free.net'
+    _SQLALCHEMY_DATABASE_PASSWORD = 'Redacted'
+    _SQLALCHEMY_DATABASE_USERNAME = 'imp_flask_db'
 
 
 class Config(HardCoded):
@@ -27,7 +27,7 @@ class Config(HardCoded):
     MAIL_DEFAULT_SENDER = 'admin@demo.test'
     MAIL_SUPPRESS_SEND = True
     SQLALCHEMY_DATABASE_URI = property(lambda self: 'mysql://{u}:{p}@{h}/{d}'.format(
-        d=quote_plus(self._SQLALCHEMY_DATABASE_DATABASE), h=quote_plus(self._SQLALCHEMY_DATABASE_HOSTNAME),
+        d=quote_plus(self._SQLALCHEMY_DATABASE_DATABASE), h=self._SQLALCHEMY_DATABASE_HOSTNAME,
         p=quote_plus(self._SQLALCHEMY_DATABASE_PASSWORD), u=quote_plus(self._SQLALCHEMY_DATABASE_USERNAME)
     ))
 
@@ -44,5 +44,5 @@ class Production(Config):
     MAIL_SUPPRESS_SEND = False
     STATICS_MINIFY = True
 
-with open('strings.json') as fp:
+with open(os.path.dirname(os.path.realpath(__file__)) + '/strings.json') as fp:
     strings = json.load(fp)

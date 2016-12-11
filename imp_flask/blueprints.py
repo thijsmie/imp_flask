@@ -26,11 +26,11 @@ def blueprint_factory(partial_module_string, url_prefix):
 
 
 home_index = blueprint_factory('home.index', '/')
-relations = blueprint_factory('imp_flask.relations', '/relations')
-transactions = blueprint_factory('imp_flask.transactions', '/transactions')
+#relations = blueprint_factory('imp_flask.relations', '/relations')
+#transactions = blueprint_factory('imp_flask.transactions', '/transactions')
 products = blueprint_factory('imp_flask.products', '/products')
-pos = blueprint_factory('imp_flask.pos', '/pos')
-conscribo = blueprint_factory('imp_flask.conscribo', '/conscribo')
-settings = blueprint_factory('imp_flask.settings', '/settings')
+#pos = blueprint_factory('imp_flask.pos', '/pos')
+#conscribo = blueprint_factory('imp_flask.conscribo', '/conscribo')
+#settings = blueprint_factory('imp_flask.settings', '/settings')
 
-all_blueprints = (home_index, relations, transactions, products, conscribo, settings,)
+all_blueprints = [home_index, products]  # , relations, transactions, conscribo, settings,)

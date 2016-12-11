@@ -241,7 +241,7 @@ class User(Base):
     admin = Column(Boolean)
 
     relation_id = Column(ForeignKey('relation.id'))
-    relation = relationship('Relation', lazy='dynamic')
+    relation = relationship('Relation')
 
 
 class RecipePart(Base):
@@ -252,10 +252,10 @@ class RecipePart(Base):
 class InputRecipe(Base):
     """"Make a special input that creates multiple products. Note: only one item may have variable cost."""
     input = Column(String(80))
-    outputs = many_to_many('inputs', 'Recipe', 'RecipePart')
+    outputs = many_to_many('outputs', 'InputRecipe', 'RecipePart')
 
 
 class OutputRecipe(Base):
     """"Make a special output that needs multiple products. Note: will do some ugly rounding."""
     output = Column(String(80))
-    inputs = many_to_many('inputs', 'Recipe', 'RecipePart')
+    inputs = many_to_many('inputs', 'OutputRecipe', 'RecipePart')

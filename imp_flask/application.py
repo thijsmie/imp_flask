@@ -1,7 +1,6 @@
 """Holds the create_app() Flask application factory. More information in create_app() docstring."""
 
 from importlib import import_module
-import locale
 import os
 
 from flask import Flask
@@ -95,7 +94,6 @@ def create_app(config_obj, no_sql=False):
     mail.init_app(app)
 
     # Activate middleware.
-    locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')  # For filters inside the middleware file.
     with app.app_context():
         import_module('imp_flask.middleware')
 

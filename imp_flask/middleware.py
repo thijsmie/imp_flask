@@ -3,8 +3,6 @@
 To be imported by the application.current_app() factory.
 """
 
-import locale
-
 from logging import getLogger
 
 from flask import current_app, render_template, request
@@ -52,20 +50,6 @@ def whitelist(value):
     for k, v in translations.items():
         escaped = escaped.replace(k, v)  # Un-escape specific elements using str.replace.
     return Markup(escaped)  # Return as 'safe'.
-
-
-@current_app.template_filter()
-def euro(value):
-    """Formats the float value into two-decimal-points euro amount.
-    From http://flask.pocoo.org/docs/templating/
-
-    Positional arguments:
-    value -- the string representation of a float to perform the operation on.
-
-    Returns:
-    Euro formatted string.
-    """
-    return locale.currency(float(value), grouping=True)
 
 
 @current_app.template_filter()
