@@ -2,19 +2,16 @@
 
 from importlib import import_module
 import os
+import simplejson as json
 
 from flask import Flask
 from flask_statics import Statics
 from yaml import load
 
-import imp_flask as app_root
 from imp_flask.blueprints import all_blueprints
 from imp_flask.extensions import db, mail
-
-APP_ROOT_FOLDER = os.path.abspath(os.path.dirname(app_root.__file__))
-TEMPLATE_FOLDER = os.path.join(APP_ROOT_FOLDER, 'templates')
-TEXTEMPLATE_FOLDER = os.path.join(APP_ROOT_FOLDER, 'textemplates')
-STATIC_FOLDER = os.path.join(APP_ROOT_FOLDER, 'static')
+from imp_flask.paths import APP_ROOT_FOLDER, TEMPLATE_FOLDER, TEXTEMPLATE_FOLDER, STATIC_FOLDER, TEXSTATIC_FOLDER
+from imp_flask.core.latex import texenv
 
 
 def get_config(config_class_string, yaml_files=None):
@@ -92,6 +89,10 @@ def create_app(config_obj, no_sql=False):
         db.init_app(app)
     Statics(app)  # Enable Flask-Statics-Helper features.
     mail.init_app(app)
+
+    # Initialize latex module
+    with open(os.path.join(APP_ROOT_FOLDER, "strings.json")) as fp:
+        texenv.init_path(TEXTEMPLATE_FOLDER, TEXSTATIC_FOLDER, json.load(fp))
 
     # Activate middleware.
     with app.app_context():

@@ -13,16 +13,16 @@
     \includegraphics[width=5cm]{((% header.image | escape_tex %))} \\
     ((% header.text | escape_tex%))
     \flushleft
-(% endif%)
+(% endif %)
 (% if details is defined %)
     \begin{tabular}{l l}
         (% for key in details %)
             (% if key.startswith('_') %)
-                \textit{ ((% strings[key] | excape_tex %)) } & ((% details[key] | escape_tex %)) \\
+                \textit{ ((% strings[key] | escape_tex %)) } & ((% details[key] | escape_tex %)) \\
             (% else %)
-                \textit{ ((% key | excape_tex %)) } & ((% details[key] | escape_tex %)) \\
+                \textit{ ((% key | escape_tex %)) } & ((% details[key] | escape_tex %)) \\
             (% endif %)
-        (% endfor )
+        (% endfor %)
     \end{tabular}
 (% endif %)
 \vspace{1cm}

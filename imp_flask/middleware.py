@@ -4,11 +4,14 @@ To be imported by the application.current_app() factory.
 """
 
 from logging import getLogger
+import os
 
 from flask import current_app, render_template, request
 from markupsafe import Markup
+import simplejson as json
 
 from imp_flask.core.email import send_exception
+from imp_flask.paths import APP_ROOT_FOLDER
 
 LOG = getLogger(__name__)
 
@@ -93,3 +96,11 @@ def average_key(value, key):
     values = [r.get(key, 0) if hasattr(r, 'get') else getattr(r, key, 0) for r in value]
     return float(sum(values)) / (len(values) or float('nan'))
 
+
+@current_app.context_processor
+def load_strings():
+    """Inject 'strings' into the jinja2 environment so it is available everywhere
+    """
+    with open(os.path.join(APP_ROOT_FOLDER, 'strings.json')) as fp:
+        strings = json.load(fp)
+    return dict(strings=strings)

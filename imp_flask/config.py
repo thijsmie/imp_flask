@@ -43,6 +43,3 @@ class Production(Config):
     ADMINS = ['imp@tmiedema.com']
     MAIL_SUPPRESS_SEND = False
     STATICS_MINIFY = True
-
-with open(os.path.dirname(os.path.realpath(__file__)) + '/strings.json') as fp:
-    strings = json.load(fp)
