@@ -41,9 +41,16 @@ The projects structure is derived from the [Flask-Large-Application-Example](htt
 │  │
 │  ├─ templates/      # Base templates used/included throughout the app.
 │  │  ├─ 404.html
+│  │  ├─ navbar.html
 │  │  └─ base.html
 │  │
-│  ├─ validators/          # json structures for apicalls
+│  ├─ textemplates/          # Templates for latex renderere.
+│  │  └─ document.tex
+│  │
+│  ├─ texstatic/          # Static files for latex renderer
+│  │  └─ logo.svg
+│  │
+│  ├─ validators/          # JSON structures for apicalls
 │  │
 │  ├─ views/
 │  │  ├─ view1/
@@ -59,7 +66,9 @@ The projects structure is derived from the [Flask-Large-Application-Example](htt
 │  ├─ blueprints.py   # Define Flask blueprints and their URLs.
 │  ├─ config.py       # All configs for Flask, Prod, Dev, etc.
 │  ├─ extensions.py   # Instantiate SQLAlchemy, etc. Importable.
-│  └─ middleware.py   # Error handlers, template filters, other misc code.
+│  ├─ middleware.py   # Error handlers, template filters, other misc code.
+│  ├─ paths.py        # Importable module to fetch app paths
+│  └─ strings.json    # App-wide config of fieldnames in templates (both html and tex)
 │
 ├─ tests/                   # Tests are structured similar to the application.
 │  ├─ core/
