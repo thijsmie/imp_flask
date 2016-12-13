@@ -5,7 +5,6 @@ To avoid circular imports with views and create_app(), extensions are instantiat
 """
 
 from logging import getLogger
-from imp_flask.core.latex import escape_tex
 
 from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy

@@ -1,4 +1,4 @@
-from imp_flask.models.imps import Transaction, Relation, Product
+from imp_flask.models.imps import Transaction, Relation, Product, Mod
 from imp_flask.validators.validate import validate
 import dateutil
 
@@ -20,10 +20,13 @@ def newtransaction(data):
 
     for row in data['rows']:
         product = Product.query.get_or_404(row['product'])
+        mods = []
+        for mod_id in row['includes_mods']:
+            mods.append(Mod.query.get(mod_id))
         if row['type'] is 'gain':
-            transaction.gain(product, row['amount'], row['value'])
+            transaction.gain(product, row['amount'], row['value'], mods)
         elif row['type'] is 'lose':
-            transaction.loss(product, row['amount'])
+            transaction.loss(product, row['amount'], mods)
         else:
             raise ShouldBeImpossibleException()
 

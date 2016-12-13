@@ -10,11 +10,15 @@ Command details:
                         application context.
     create_all          Only create database tables if they don't exist and
                         then exit.
+    drop_all            Drop all database tables.
+    create_user         Create a user in the database.
 
 Usage:
     manage.py devserver [-p NUM] [-l DIR] [--config_prod]
     manage.py shell [--config_prod]
     manage.py create_all [--config_prod]
+    manage.py drop_all
+    manage.py create_user <username> <password> <email> <admin>
     manage.py (-h | --help)
 
 Options:
@@ -39,7 +43,6 @@ import sys
 from docopt import docopt
 import flask
 from flask_script import Shell
-from tornado import httpserver, ioloop, web, wsgi
 
 from imp_flask.application import create_app, get_config
 from imp_flask.extensions import db
@@ -159,8 +162,6 @@ def command(func):
 def devserver():
     setup_logging('devserver')
     app = create_app(parse_options())
-    fsh_folder = app.blueprints['flask_statics_helper'].static_folder
-    log_messages(app, OPTIONS['--port'], fsh_folder)
     app.run(host='0.0.0.0', port=int(OPTIONS['--port']))
 
 
@@ -185,6 +186,36 @@ def create_all():
     for table in created_tables:
         log.info('Created table: {}'.format(table))
 
+
+@command
+def drop_all():
+    setup_logging('create_all')
+    app = create_app(parse_options())
+    with app.app_context():
+        db.reflect()
+        db.drop_all()
+
+
+@command
+def create_user():
+    setup_logging('create_user')
+    app = create_app(parse_options())
+    log = logging.getLogger(__name__)
+    admin = False
+    if OPTIONS['<admin>'].isdigit():
+        admin = int(OPTIONS['<admin>']) > 0
+    elif OPTIONS['<admin>'].lower() == 'true':
+        admin = True
+
+    with app.app_context():
+        from imp_flask.core.auth import new_user
+        session = db.create_session({})
+        user = new_user(OPTIONS['<username>'], OPTIONS['<password>'], OPTIONS['<email>'], admin)
+        session.add(user)
+        session.commit()
+
+    log.info("Created user {}\npasshash: {}\nemail: {}\nadmin: {}\nid: {}"
+             .format(user.username, user.passhash, user.email, user.admin, user.id))
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, lambda *_: sys.exit(0))  # Properly handle Control+C

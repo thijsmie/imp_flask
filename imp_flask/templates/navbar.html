@@ -32,10 +32,10 @@
                 </li>
                 #}
             </ul>
-            {{ well_alert_navbar(flash_messages_well) }}
+            <ul class="nav navbar-nav navbar-right">
+                <li style="display:inline-block; color: white;">{% include 'login.html' %}</li>
+            </ul>
         </div>
 
     </div>
 </div>
-{{ well_alert(flash_messages_well) }}
-{{ modal_alert(flash_messages_modal) }}

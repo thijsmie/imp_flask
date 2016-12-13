@@ -25,7 +25,7 @@ def blueprint_factory(partial_module_string, url_prefix):
     return blueprint
 
 
-home_index = blueprint_factory('home.index', '/')
+home_index = blueprint_factory('home.index', '')
 #relations = blueprint_factory('imp_flask.relations', '/relations')
 #transactions = blueprint_factory('imp_flask.transactions', '/transactions')
 products = blueprint_factory('imp_flask.products', '/products')

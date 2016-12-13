@@ -1,6 +1,6 @@
 """Holds all transaction and product data"""
 
-from sqlalchemy import Column, String, Text, Integer, Float, Boolean, DateTime, ForeignKey, Enum, Table, func
+from sqlalchemy import Column, String, Text, Integer, Float, Boolean, DateTime, ForeignKey, Enum, func
 from sqlalchemy.orm import relationship
 from imp_flask.models.helpers import Base, many_to_many
 from imp_flask.tasks.rowapplymods import rowapplymods
@@ -233,15 +233,6 @@ class Relation(Base):
         self.send_transaction = True
         self.send_transaction_updates = True
         self.send_budget_warnings = True
-
-
-class User(Base):
-    username = Column(String(80))
-    passhash = Column(String(256))
-    admin = Column(Boolean)
-
-    relation_id = Column(ForeignKey('relation.id'))
-    relation = relationship('Relation')
 
 
 class RecipePart(Base):

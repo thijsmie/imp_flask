@@ -5,13 +5,14 @@ import os
 import simplejson as json
 
 from flask import Flask
-from flask_statics import Statics
+from flask_bootstrap import Bootstrap
 from yaml import load
 
 from imp_flask.blueprints import all_blueprints
 from imp_flask.extensions import db, mail
 from imp_flask.paths import APP_ROOT_FOLDER, TEMPLATE_FOLDER, TEXTEMPLATE_FOLDER, STATIC_FOLDER, TEXSTATIC_FOLDER
 from imp_flask.core.latex import texenv
+from imp_flask.core.auth import auth, auth_hasher
 
 
 def get_config(config_class_string, yaml_files=None):
@@ -87,8 +88,11 @@ def create_app(config_obj, no_sql=False):
     # Initialize extensions/add-ons/plugins.
     if not no_sql:
         db.init_app(app)
-    Statics(app)  # Enable Flask-Statics-Helper features.
+
+    Bootstrap(app)
     mail.init_app(app)
+    auth.init_app(app)
+    auth_hasher.init_app(app)
 
     # Initialize latex module
     with open(os.path.join(APP_ROOT_FOLDER, "strings.json")) as fp:

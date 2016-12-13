@@ -1,7 +1,5 @@
-# Please note that the PyCharm IDE reports the following line as a broken import, it is not.
-from six.moves.urllib.parse import quote_plus
-import simplejson as json
-import os
+from urllib.parse import quote_plus
+
 
 class HardCoded(object):
     """Constants used throughout the application.
@@ -10,10 +8,10 @@ class HardCoded(object):
     extensions goes here.
     """
     ADMINS = ['imp@tmiedema.com']
-    DB_MODELS_IMPORTS = ('imps',)
+    DB_MODELS_IMPORTS = ('helpers', 'imps', 'auth', 'pos')
     ENVIRONMENT = property(lambda self: self.__class__.__name__)
     _SQLALCHEMY_DATABASE_DATABASE = 'imp_flask_db'
-    _SQLALCHEMY_DATABASE_HOSTNAME = 'db4free.net'
+    _SQLALCHEMY_DATABASE_HOSTNAME = '127.0.0.1'
     _SQLALCHEMY_DATABASE_PASSWORD = 'Redacted'
     _SQLALCHEMY_DATABASE_USERNAME = 'imp_flask_db'
 
@@ -26,6 +24,7 @@ class Config(HardCoded):
     MAIL_SERVER = 'smtp.localhost.test'
     MAIL_DEFAULT_SENDER = 'admin@demo.test'
     MAIL_SUPPRESS_SEND = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = property(lambda self: 'mysql://{u}:{p}@{h}/{d}'.format(
         d=quote_plus(self._SQLALCHEMY_DATABASE_DATABASE), h=self._SQLALCHEMY_DATABASE_HOSTNAME,
         p=quote_plus(self._SQLALCHEMY_DATABASE_PASSWORD), u=quote_plus(self._SQLALCHEMY_DATABASE_USERNAME)

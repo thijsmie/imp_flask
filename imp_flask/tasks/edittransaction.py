@@ -1,4 +1,4 @@
-from imp_flask.models.imps import Transaction, Relation, Product
+from imp_flask.models.imps import Transaction, Product
 from imp_flask.validators.validate import validate
 import dateutil
 

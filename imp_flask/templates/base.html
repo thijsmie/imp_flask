@@ -1,13 +1,6 @@
-{% extends 'flask_statics_helper/bootstrap.html' %}
-{% from 'flash.html' import normal_alert %}
-
-{% set flash_messages_normal = get_flashed_messages(with_categories=True,
-    category_filter=['default', 'success', 'info', 'warning', 'danger']) %}
-{% set flash_messages_modal = get_flashed_messages(category_filter=['modal']) %}
-{% set flash_messages_well = get_flashed_messages(category_filter=['well']) %}
-
-{% if flash_messages_normal %}{% set STATICS_ENABLE_RESOURCE_BOOTSTRAP_GROWL = True %}{% endif %}
-{% if flash_messages_well %}{% set STATICS_ENABLE_RESOURCE_CSSHAKE = True %}{% endif %}
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/fixes.html" as fixes %}
+{% import "bootstrap/utils.html" as util %}
 
 {% block title %}IMP_Flask{%- block append_title %}{% endblock %}{% endblock %}
 
@@ -23,9 +16,6 @@
 {% endblock %}
 
 {% block navbar %}
-    {# Need to set these variables to fix a "context depth limit" with Jinja2 blocks and includes. #}
-    {% set flash_messages_modal = flash_messages_modal %}
-    {% set flash_messages_well = flash_messages_well %}
     {% include 'navbar.html' with context %}
 {% endblock %}
 
@@ -40,8 +30,17 @@
                     '<div class="col-xs-10 col-sm-10 col-md-6 col-lg-6 growl-animated alert abAlert">';
         </script>
     {% endif %}
-
-    {{ normal_alert(flash_messages_normal) }}
 {% endblock %}
 
-{# Includes jQuery already. Specify additional JS libraries like d3/FontAwesome in your template. #}
+{% block head %}
+{{super()}}
+{{fixes.ie8()}}
+{% endblock %}
+
+{% block content %}
+{{util.flashed_messages(dismissible=True)}}
+<div class="container">
+    {% block container %}
+    {% endblock %}
+</div>
+{% endblock %}
