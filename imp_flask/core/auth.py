@@ -13,6 +13,7 @@ except NotImplementedError:
     LOG.critical("Insecure random! Please make random.SystemRandom available!")
 
 
+# noinspection PyUnusedLocal
 def generate_session_key(length):
     return ''.join([random.choice('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') for i in range(length)])
 
