@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% from 'imp_flask_paginator.html' import paginator_buttons %}
+{% from 'imp_flask_mod_helpers.html' import render_mod_as_equation %}
+
+{% block container %}
+    <div>
+        <h1>
+            All Mods
+        </h1>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-condensed table-bordered table-striped">
+            <thead><tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Tag</th>
+                <th>Equation</th>
+                <th>Included</th>
+            </tr></thead>
+
+            <tbody>
+                {% for mod in pagination.items %}
+                    <tr>
+                        <td>{{ mod.id }}</td>
+                        <td><a href='{{ url_for(".details", mod_id=mod.id) }}'>{{ mod.name }}</a></td>
+                        <td>{{ mod.tag }}</td>
+                        <td>{{ render_mod_as_equation(mod) }}</td>
+                        <td>{{ mod.included }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center">Empty set.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {{ paginator_buttons(pagination) }}
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <style type="text/css">
+        @-moz-document url-prefix() {
+          fieldset { display: table-cell; }
+        }
+    </style>
+{% endblock %}

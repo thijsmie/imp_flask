@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% from 'imp_flask_mod_helpers.html' import render_mod_as_equation %}
+
+{% block container %}
+    <div>
+        <h2>
+            <span class="label label-default">{{ mod.tag }}</span> {{ mod.name }}
+        </h2>
+    </div>
+    
+    <div class="col-md-4">
+        <br />
+        <p>{{ mod.description }}</p>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">Equation:</div>
+          <div class="panel-body">
+            {{ render_mod_as_equation(mod) }}
+          </div>
+         </div>
+         Included: <input type='checkbox' disabled {% if mod.included %}checked{% endif %}>
+    </div>
+{% endblock %}

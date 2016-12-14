@@ -1,0 +1,29 @@
+{% from 'imp_flask_general_helpers.html' import format_currency %}
+
+{% macro render_mod_as_equation(mod) -%}
+    {% set left, right = ('', '') -%}
+    {%- if mod.rounding != 'none' -%}
+        {% set left = mod.rounding + '(' %}
+        {% set right = ')' %}
+    {%- endif -%}
+    {%- if mod.pre_add != 0 -%}
+        {% set left = left + '(€ + ' + format_currency(mod.pre_add) + ')' %}
+    {% else %}
+        {% set left = left + '€' %}
+    {%- endif -%}
+    {%- if mod.multiplier != 1.0 -%}
+        {% set left = left + ' × ' + "{:.2f}".format(mod.multiplier) %}
+    {%- endif -%}
+    {%- if mod.post_add != 0 -%}
+        {% set left = left + ' + ' + format_currency(mod.post_add) %}
+    {%- endif -%}
+    <b>{{ left }}{{ right }}</b>
+{%- endmacro %}
+
+{% macro render_mod_as_tag(mod) -%}
+{% if mod.included -%}
+<button type="button" class="btn btn-link btn-xs" style="border-style:solid;border-width:1px;" data-html="true" data-container="body" data-toggle="popover" data-placement="right" data-content="{{ render_mod_as_equation(mod) }} <a href='{{ url_for('imp_flask.mods.details', mod_id=mod.id) }}' target='_blank'>Details</a>" data-original-title="" title="">{{ mod.tag }}</button>
+{%- else -%}
+<button type="button" class="btn btn-default btn-xs" data-html="true" data-container="body" data-toggle="popover" data-placement="right" data-content="{{ render_mod_as_equation(mod) }} <a href='{{ url_for('imp_flask.mods.details', mod_id=mod.id) }}' target='_blank'>Details</a>" data-original-title="" title="">{{ mod.tag }}</button>
+{% endif %}
+{%- endmacro %}
