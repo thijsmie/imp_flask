@@ -7,12 +7,7 @@
 {% block styles %}
     {{ super() }}
     <link rel="shortcut icon" href="/static/favicon.ico?" />
-
-    {% if flash_messages_normal or flash_messages_modal or flash_messages_well %}
-        <style type="text/css">
-            .customAlert { word-break: break-all; }
-        </style>
-    {% endif %}
+    <link rel="stylesheet" href="/static/custombootstrap.min.css">
 {% endblock %}
 
 {% block navbar %}
