@@ -165,6 +165,7 @@ class Mod(Base):
     # nvalue = (ovalue + pre_add * amount)*multiplier + post_add * amount
     name = Column(String(64))
     tag = Column(String(16))
+    description = Column(String(500))
     pre_add = Column(Integer)
     multiplier = Column(Float)
     post_add = Column(Integer)

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% from 'imp_flask_paginator.html' import paginator_buttons %}
+{% from 'imp_flask_mod_helpers.html' import render_mod_as_tag %}
+{% from 'imp_flask_general_helpers.html' import format_currency %}
+
+{% block container %}
+    <div>
+        <h1>All Products</h1>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-condensed table-bordered table-striped">
+            <thead><tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Amount</th>
+                <th>Total Value</th>
+                <th>Approximate Unit Value</th>
+                <th>Mods on Buy</th>
+                <th>Mods on Sell</th>
+            </tr></thead>
+
+            <tbody>
+                {% for product in pagination.items %}
+                    <tr>
+                        <td>{{ product.id }}</td>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.amount }}</td>
+                        <td>{{ format_currency(product.value) }}</td>
+                        <td>{{ format_currency(product.value / (product.amount | float)) }}</td>
+                        <td>{% for mod in product.gainmods %}{{ render_mod_as_tag(mod) }}{% endfor %}</td>
+                        <td>{% for mod in product.losemods %}{{ render_mod_as_tag(mod) }}{% endfor %}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center">Empty set.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {{ paginator_buttons(pagination) }}
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <style type="text/css">
+        @-moz-document url-prefix() {
+          fieldset { display: table-cell; }
+        }
+    </style>
+{% endblock %}

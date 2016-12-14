@@ -11,5 +11,5 @@ from imp_flask.models.imps import Product
 def index(page):
     if page <= 0:
         page = 1
-    pagination = Product.query.order_by('name').paginate(page, per_page=25, error_out=False)
-    return render_template('products.html', pagination=pagination)
+    pagination = Product.query.order_by('id').paginate(page, per_page=25, error_out=False)
+    return render_template('imp_flask_products.html', pagination=pagination)
