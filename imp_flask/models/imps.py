@@ -30,6 +30,7 @@ class Product(Base):
     value_constant = Column(Boolean)
     hidden = Column(Boolean)
 
+    # TODO: losemods and gainmods should not just be many_to_many since they have an order to be executed in!
     losemods = many_to_many('losemods', 'Product', 'Mod')
     gainmods = many_to_many('gainmods', 'Product', 'Mod')
 

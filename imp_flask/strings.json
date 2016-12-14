@@ -1,5 +1,6 @@
 {
   "Currency": "\\EUR",
+  "CurrencyHTML": "€",
   "Product": "Product",
   "Amount": "Hoeveelheid",
   "Value": "Prijs",
