@@ -1,5 +1,8 @@
-from flask_login import LoginManager, login_user, logout_user
+from flask_login import LoginManager, login_user, logout_user, current_user
 from flask_bcrypt import Bcrypt
+from flask import redirect
+from imp_flask.core import flash
+from functools import wraps
 
 from imp_flask.models.auth import User
 from imp_flask.extensions import LOG, db
@@ -67,3 +70,38 @@ def new_user(username, password, email, admin, relation=None, pos=None):
         user.pos = pos
 
     return user
+
+
+def ensure_user_admin(f):
+    # Note, should be placed below @login_required
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.admin:
+            flash.danger("Your user account is not allowed to perform this action.")
+            return redirect('/')
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def ensure_user_pos(f):
+    # Note, should be placed below @login_required
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.admin:
+            if not (current_user.pos is not None and current_user.pos.id == kwargs['pos_id']):
+                flash.danger("Your user account is not allowed to perform this action.")
+                return redirect('/')
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def ensure_user_relation(f):
+    # Note, should be placed below @login_required
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.admin:
+            if not (current_user.relation is not None and current_user.relation.id == kwargs['relation_id']):
+                flash.danger("Your user account is not allowed to perform this action.")
+                return redirect('/')
+        return f(*args, **kwargs)
+    return decorated_function
