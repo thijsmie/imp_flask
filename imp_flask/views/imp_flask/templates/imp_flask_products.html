@@ -5,14 +5,20 @@
 
 {% block container %}
     <div>
+        {% if showgroup -%}
         <h1>All Products</h1>
+        {%- else -%}
+        <a href="{{ url_for('.index') }}">Back to all</a>
+        <h1>Products in group {{ pagination.items[0].group }}</h1>
+        {%- endif %}
     </div>
 
     <div class="table-responsive">
-        <table class="table table-condensed table-bordered table-striped">
+        <table class="table table-condensed table-striped">
             <thead><tr>
-                <th>#</th>
+                <th class="detail">#</th>
                 <th>Name</th>
+                {% if showgroup %}<th>Group</th>{% endif %}
                 <th>Amount</th>
                 <th>Total Value</th>
                 <th>Approximate Unit Value</th>
@@ -25,15 +31,22 @@
                     <tr>
                         <td>{{ product.id }}</td>
                         <td>{{ product.name }}</td>
-                        <td>{{ product.amount }}</td>
-                        <td>{{ format_currency(product.value) }}</td>
-                        <td>{{ format_currency(product.value / (product.amount | float)) }}</td>
+                        {% if showgroup -%}
+                            <td><a href="{{ url_for('.showgroup', group=product.group) }}">{{ product.group }}</a></td>
+                        {%- endif %}
+                        <td align="right">{{ product.amount }}</td>
+                        <td align="right">{{ format_currency(product.value) }}</td>
+                        {% if product.amount == 0 -%}
+                        <td align="right">0.00</td>
+                        {%- else -%}
+                        <td align="right">{{ format_currency(product.value / (product.amount | float)) }}</td>
+                        {%- endif %}
                         <td>{% for mod in product.gainmods %}{{ render_mod_as_tag(mod) }}{% endfor %}</td>
                         <td>{% for mod in product.losemods %}{{ render_mod_as_tag(mod) }}{% endfor %}</td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="6" style="text-align: center">Empty set.</td>
+                        <td colspan="6" style="text-align: center"><h2>&empty;</h2></td>
                     </tr>
                 {% endfor %}
             </tbody>
