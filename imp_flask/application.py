@@ -9,7 +9,7 @@ from flask_bootstrap import Bootstrap
 from yaml import load
 
 from imp_flask.blueprints import all_blueprints
-from imp_flask.extensions import db, mail
+from imp_flask.extensions import db, mail, csrf
 from imp_flask.paths import APP_ROOT_FOLDER, TEMPLATE_FOLDER, TEXTEMPLATE_FOLDER, STATIC_FOLDER, TEXSTATIC_FOLDER
 from imp_flask.core.latex import texenv
 from imp_flask.core.auth import auth, auth_hasher
@@ -92,6 +92,7 @@ def create_app(config_obj, no_sql=False):
     Bootstrap(app)
     mail.init_app(app)
     auth.init_app(app)
+    csrf.init_app(app)
     auth_hasher.init_app(app)
 
     # Initialize latex module
