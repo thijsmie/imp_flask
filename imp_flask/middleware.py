@@ -97,6 +97,11 @@ def average_key(value, key):
     return float(sum(values)) / (len(values) or float('nan'))
 
 
+@current_app.template_filter()
+def format_date(value, date_format='%Y-%m-%d'):
+    return value.strftime(date_format)
+
+
 @current_app.context_processor
 def load_strings():
     """Inject 'strings' into the jinja2 environment so it is available everywhere

@@ -4,6 +4,8 @@ import re
 import jinja2
 import latex
 from flask import make_response
+import datetime
+
 
 LATEX_SUBS = (
     (re.compile(r'\n'), r'\\\\'),
@@ -21,6 +23,10 @@ def escape_tex(value):
     for pattern, replacement in LATEX_SUBS:
         newval = pattern.sub(replacement, newval)
     return newval
+
+
+def format_date(value, date_format='%Y-%m-%d'):
+    return value.strftime(date_format)
 
 
 class TexRenderer:
@@ -43,6 +49,7 @@ class TexRenderer:
           loader=jinja2.FileSystemLoader(template_path)
         )
         self.jinja2env.filters['escape_tex'] = escape_tex
+        self.jinja2env.filters['format_date'] = format_date
         self.jinja2env.globals['strings'] = strings
         self.static_path = static_path
 

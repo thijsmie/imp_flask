@@ -13,7 +13,7 @@ def index(page):
     if page <= 0:
         page = 1
 
-    pagination = Product.query.order_by('id').paginate(page, per_page=25, error_out=False)
+    pagination = Product.query.order_by('id').paginate(page, per_page=20, error_out=False)
     return render_template('imp_flask_products.html', showgroup=True, pagination=pagination)
 
 
@@ -24,7 +24,7 @@ def showgroup(group, page):
     if page <= 0:
         page = 1
 
-    pagination = Product.query.filter(Product.group == group).order_by('id').paginate(page, per_page=25, error_out=False)
+    pagination = Product.query.filter(Product.group == group).order_by('id').paginate(page, per_page=20, error_out=False)
     return render_template('imp_flask_products.html', showgroup=False, pagination=pagination)
 
 
