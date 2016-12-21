@@ -1,6 +1,178 @@
 {% extends 'base.html' %}
+{% from 'imp_flask_mod_helpers.html' import render_mod_as_tag %}
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block container %}
-{{ wtf.quick_form(form) }}
+
+{# render invisible div containers for mods #}
+{% for mod in mods %}
+    <div id="div_mod_gain_content_{{ mod.id }}" style="display:none;" >
+        <div class="btn-group" style="padding:4px">
+            {{ render_mod_as_tag(mod) }}
+            <a onclick="gain_reset($(this));" class="btn btn-sm btn-danger rm-mod-but"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+        </div>
+    </div>
+    <div id="div_mod_loss_content_{{ mod.id }}" style="display:none;" >
+        <div class="btn-group" style="padding:4px">
+            {{ render_mod_as_tag(mod) }}
+            <a onclick="loss_reset($(this));" class="btn btn-sm btn-danger rm-mod-but"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+        </div>
+    </div>
+{% endfor %}
+
+
+
+<form class="form-horizontal">
+<div class="col-lg-6">
+<div class="well bs-component">
+  <fieldset>
+    <legend>New Product</legend>
+    <div class="form-group">
+      <label for="name" class="col-lg-3 control-label">Name</label>
+      <div class="col-lg-9">
+        <input type="text" class="form-control" id="name" placeholder="Name">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="group" class="col-lg-3 control-label">Group</label>
+      <div class="col-lg-9">
+        <input type="text" class="form-control" id="group" placeholder="Group">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="amount" class="col-lg-3 control-label">Initial Stock</label>
+      <div class="col-lg-9">
+        <input id="amount" type="text" class="form-control" placeholder="Amount">
+      </div>
+    </div>
+    <div class="form-group"> 
+      <label for="value" class="col-lg-3 control-label">Value</label>
+      <div class="col-lg-9">
+        <div id="valwrap" class="input-group">
+          <span class="input-group-addon"><span class="glyphicon glyphicon-euro" aria-hidden="true"></span></span>
+          <input id="value" type="text" class="form-control" placeholder="Value">
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="inputOther" class="col-lg-3 control-label">Behaviour</label>
+      <div class="col-lg-9">
+        <div id="inputOther" class="checkbox">
+          <label class="col-lg-6">
+            <input type="checkbox"> Allow negative stock
+          </label>
+          <label class="col-lg-6">
+            <input type="checkbox"> Standard unit value
+          </label>
+        </div>
+      </div>
+    </div>
+</div>
+</div>    
+<div class="col-lg-6"> 
+<div class="well bs-component">
+    <div class="form-group">
+      <label for="gainmodselect" class="col-lg-3 control-label">Buy Mods</label>
+      <div class="col-lg-9">
+        <select id='gainmodselect' class="form-control">
+            <option value=0>Add mod on buy</option>
+            {% for mod in mods %}
+                <option value={{ mod.id }}>{{ mod.name }}</option>
+            {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="showgainmod" class="col-lg-3 control-label"></label>
+      <div id="showgainmod" class="col-lg-9">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="lossmodselect" class="col-lg-3 control-label">Sell Mods</label>
+      <div class="col-lg-9">
+        <select id='lossmodselect' class="form-control">
+            <option value=0>Add mod on sell</option>
+            {% for mod in mods %}
+                <option value={{ mod.id }}>{{ mod.name }}</option>
+            {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="showlossmod" class="col-lg-3 control-label"></label>
+      <div id="showlossmod" class="col-lg-9">
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-lg-9 col-lg-offset-3">
+        <button type="reset" class="btn btn-default">Cancel</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </fieldset>
+</div>
+</div>    
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+// Some ugly jquery. On selecting from list, get the hidden div with the correct mod rendering. Append that to the box, apply popover and unselect list.
+var gainmods = [];
+var lossmods = [];
+
+$('#gainmodselect').change(function() {
+    if ($(this).val() != "0") {
+        var val = $(this).val();
+        var el = $($("#div_mod_gain_content_".concat(val)).html());
+        $("#showgainmod").append(el);
+        el.data("svalue", val);
+        el.data("stext", $("#gainmodselect option:selected").text());
+        
+        $("[data-toggle=popover]").popover();
+        $("#gainmodselect option[value='0']").prop("selected", true);
+        gainmods.push(+val)
+        
+        $("#gainmodselect option[value='".concat(val).concat("']")).remove();
+    }
+});
+
+function gain_reset(jq_object) {
+    var par = jq_object.parent();
+    $('#gainmodselect')
+         .append($("<option></option>")
+                    .attr("value",par.data("svalue"))
+                    .text(par.data("stext")));
+    gainmods.splice(gainmods.indexOf(+par.data("svalue")), 1);
+    par.remove();
+}
+
+$('#lossmodselect').change(function() {
+    if ($(this).val() != "0") {
+        var val = $(this).val();
+        var el = $($("#div_mod_loss_content_".concat(val)).html());
+        $("#showlossmod").append(el);
+        el.data("svalue", val);
+        el.data("stext", $("#lossmodselect option:selected").text());
+        
+        $("[data-toggle=popover]").popover();
+        $("#lossmodselect option[value='0']").prop("selected", true);
+        lossmods.push(+val)
+        
+        $("#lossmodselect option[value='".concat(val).concat("']")).remove();
+    }
+});
+
+function loss_reset(jq_object) {
+    var par = jq_object.parent();
+    $('#lossmodselect')
+         .append($("<option></option>")
+                    .attr("value",par.data("svalue"))
+                    .text(par.data("stext")));
+    lossmods.splice(lossmods.indexOf(+par.data("svalue")), 1);
+    par.remove();
+}
+</script>
 {% endblock %}

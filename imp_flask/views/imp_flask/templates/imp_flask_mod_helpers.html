@@ -22,8 +22,8 @@
 
 {% macro render_mod_as_tag(mod) -%}
 {% if mod.included -%}
-<button type="button" class="btn btn-link btn-xs" style="border-style:solid;border-width:1px;" data-html="true" data-container="body" data-toggle="popover" data-placement="right" data-content="{{ render_mod_as_equation(mod) }} <a href='{{ url_for('imp_flask.mods.details', mod_id=mod.id) }}' target='_blank'>Details</a>" data-original-title="" title="">{{ mod.tag }}</button>
+<a class="btn btn-primary btn-sm" data-html="true" data-container="body" data-toggle="popover" data-placement="right" data-content="{{ render_mod_as_equation(mod) }} <a href='{{ url_for('imp_flask.mods.details', mod_id=mod.id) }}' target='_blank'>Details</a>" data-original-title="" title="">{{ mod.tag }}</a>
 {%- else -%}
-<button type="button" class="btn btn-default btn-xs" data-html="true" data-container="body" data-toggle="popover" data-placement="right" data-content="{{ render_mod_as_equation(mod) }} <a href='{{ url_for('imp_flask.mods.details', mod_id=mod.id) }}' target='_blank'>Details</a>" data-original-title="" title="">{{ mod.tag }}</button>
+<a class="btn btn-default btn-sm" data-html="true" data-container="body" data-toggle="popover" data-placement="right" data-content="{{ render_mod_as_equation(mod) }} <a href='{{ url_for('imp_flask.mods.details', mod_id=mod.id) }}' target='_blank'>Details</a>" data-original-title="" title="">{{ mod.tag }}</a>
 {% endif %}
 {%- endmacro %}
