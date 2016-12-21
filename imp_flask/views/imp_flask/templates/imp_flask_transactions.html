@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% from 'imp_flask_paginator.html' import paginator_buttons %}
+{% from 'imp_flask_mod_helpers.html' import render_mod_as_equation %}
+
+{% block container %}
+    <div>
+        {% if showrelation -%}
+        <h1>All Transactions</h1>
+        {%- else -%}
+        <a href="{{ url_for('.index') }}">Back to all</a>
+        <h1>Transactions from relation {{ pagination.items[0].relation.name }}</h1>
+        {%- endif %}
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-condensed table-striped">
+            <thead><tr>
+                <th>#</th>
+                <th>Date</th>
+                {% if showrelation %}<th>Relation</th>{% endif %}
+                <th>Tracking No.</th>
+                <th>Event</th>
+                <th>Contact</th>
+            </tr></thead>
+
+            <tbody>
+                {% for transaction in pagination.items %}
+                    <tr>
+                        <td>{{ transaction.id }}</td>
+                        <td>{{ (transaction.eventdate | format_date) }}</td>
+                        {% if showrelation -%}
+                        <td><a href="{{ url_for('.showrelation', relation_id=transaction.relation_id) }}">{{ transaction.relation.name }}</a></td>
+                        {%- endif %}
+                        <td>{{ (transaction.eventnumber | string).zfill(3) }}</td>
+                        <td>{{ transaction.eventname }}</td>
+                        <td>{{ transaction.eventcontact }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center"><h2>&empty;</h2></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {{ paginator_buttons(pagination) }}
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <style type="text/css">
+        @-moz-document url-prefix() {
+          fieldset { display: table-cell; }
+        }
+    </style>
+{% endblock %}
