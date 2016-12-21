@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block container %}
+
+<form class="form-horizontal">
+<div class="col-lg-6">
+<div class="well bs-component">
+  <fieldset>
+    <legend>New Relation</legend>
+    <div class="form-group">
+      <label for="name" class="col-lg-3 control-label">Name</label>
+      <div class="col-lg-9">
+        <input type="text" class="form-control" id="name" placeholder="Name">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="group" class="col-lg-3 control-label">Email</label>
+      <div class="col-lg-9">
+        <input type="text" class="form-control" id="group" placeholder="Email">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="value" class="col-lg-3 control-label">Budget</label>
+      <div class="col-lg-9">
+        <div id="valwrap" class="input-group">
+          <span class="input-group-addon"><span class="glyphicon glyphicon-euro" aria-hidden="true"></span></span>
+          <input id="value" type="text" class="form-control" placeholder="Budget">
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="inputOther" class="col-lg-3 control-label">Behaviour</label>
+      <div class="col-lg-9">
+        <div id="inputOther" class="checkbox">
+          <label class="col-md-12">
+            <input type="checkbox"> Send transactions
+          </label>
+          <label class="col-md-12">
+            <input type="checkbox"> Send transaction updates
+          </label>
+            <label class="col-md-12">
+            <input type="checkbox"> Send budget warnings
+          </label>
+        </div>
+      </div>
+    </div>
+      <div class="form-group">
+      <div class="col-lg-9 col-lg-offset-3">
+        <button type="reset" class="btn btn-default">Cancel</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </fieldset>
+</div>
+</div>
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}

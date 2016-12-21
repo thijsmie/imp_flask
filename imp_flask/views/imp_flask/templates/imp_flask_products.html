@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from 'imp_flask_paginator.html' import paginator_buttons %}
+{% from 'imp_flask_paginator.html' import paginator_buttons with context %}
 {% from 'imp_flask_mod_helpers.html' import render_mod_as_tag %}
 {% from 'imp_flask_general_helpers.html' import format_currency %}
 
@@ -52,15 +52,7 @@
             </tbody>
         </table>
     </div>
-
+    <a href="{{ url_for('.addproduct') }}" class="btn btn-default">Add product</a>
     {{ paginator_buttons(pagination) }}
 {% endblock %}
 
-{% block styles %}
-    {{ super() }}
-    <style type="text/css">
-        @-moz-document url-prefix() {
-          fieldset { display: table-cell; }
-        }
-    </style>
-{% endblock %}

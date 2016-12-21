@@ -21,7 +21,7 @@ def index(page):
 def addrelation():
     form = None
 
-    if form.validate_on_submit():
-        return 'sumtin'
+    #if form.validate_on_submit():
+     #   return 'sumtin'
     return render_template('imp_flask_newrelation.html', form=form)
 

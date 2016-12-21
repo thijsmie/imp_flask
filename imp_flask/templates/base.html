@@ -5,9 +5,19 @@
 {% block title %}IMP_Flask{%- block append_title %}{% endblock %}{% endblock %}
 
 {% block styles %}
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     {{ super() }}
     <link rel="shortcut icon" href="/static/favicon.ico?" />
     <link rel="stylesheet" href="/static/custombootstrap.min.css">
+    <style type="text/css">
+        @-moz-document url-prefix() {
+          fieldset { display: table-cell; }
+        }
+        .pagination {
+            margin: 3px !important;
+        }
+    </style>
 {% endblock %}
 
 {% block navbar %}
