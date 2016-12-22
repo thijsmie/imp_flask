@@ -2,9 +2,9 @@ from flask import render_template, redirect, url_for, request, abort
 from urllib.parse import urlparse, urljoin
 
 from imp_flask.blueprints import home_index
-from imp_flask.forms.login import Login
 from imp_flask.core.auth import do_login, do_logout
 from imp_flask.core import flash
+from imp_flask.extensions import validate
 
 
 # See http://flask.pocoo.org/snippets/62/ and https://flask-login.readthedocs.io/en/latest/#login-example
@@ -21,20 +21,21 @@ def index():
 
 @home_index.route('/login', methods=["GET", "POST"])
 def login():
-    form = Login()
-    if form.validate_on_submit():
+    form = request.form
+    print(request.form)
+    if validate(form, 'login'):
         next_page = request.args.get('next')
         if next_page is not None:
             if not is_safe_url(next_page):
                 flash.danger("A open redirect was attempted and prevented, did someone mess with your login link?")
                 return abort(400)
 
-        if do_login(form.username.data, form.password.data):
+        if do_login(form['username'], form['password']):
             flash.success("Logged in successfully.")
             return redirect(next_page or url_for('.index'))
         else:
-            flash.danger("Incorrect login data, please try again")
-    return render_template('home_login.html', form=form)
+            flash.danger("Incorrect login data, please try again.")
+    return render_template('home_login.html')
 
 
 @home_index.route('/logout')

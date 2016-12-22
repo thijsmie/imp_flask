@@ -17,7 +17,7 @@ except NotImplementedError:
 
 
 # noinspection PyUnusedLocal
-def generate_session_key(length):
+def generate_random_string(length):
     return ''.join([random.choice('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') for i in range(length)])
 
 
@@ -42,7 +42,7 @@ def do_login(username, password):
     if not auth_hasher.check_password_hash(user.passhash, password):
         return False
 
-    user.token = generate_session_key(64)
+    user.token = generate_random_string(64)
 
     # DB session committing can introduce weird stuff if do_login is ever called in the middle of something.
     # So don't do that...

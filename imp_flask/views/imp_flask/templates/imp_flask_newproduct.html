@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% from 'imp_flask_mod_helpers.html' import render_mod_as_tag %}
-{% import 'bootstrap/wtf.html' as wtf %}
 
 {% block container %}
 
@@ -12,17 +11,18 @@
             <a onclick="gain_reset($(this));" class="btn btn-sm btn-danger rm-mod-but"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
         </div>
     </div>
-    <div id="div_mod_loss_content_{{ mod.id }}" style="display:none;" >
+    <div id="div_mod_lose_content_{{ mod.id }}" style="display:none;" >
         <div class="btn-group" style="padding:4px">
             {{ render_mod_as_tag(mod) }}
-            <a onclick="loss_reset($(this));" class="btn btn-sm btn-danger rm-mod-but"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+            <a onclick="lose_reset($(this));" class="btn btn-sm btn-danger rm-mod-but"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
         </div>
     </div>
 {% endfor %}
 
 
 
-<form class="form-horizontal">
+<form id="newproductform" class="form-horizontal">
+<input id="_csrf_token" name="_csrf_token" type="hidden" value="{{ csrf_token() }}" />
 <div class="col-lg-6">
 <div class="well bs-component">
   <fieldset>
@@ -30,19 +30,19 @@
     <div class="form-group">
       <label for="name" class="col-lg-3 control-label">Name</label>
       <div class="col-lg-9">
-        <input type="text" class="form-control" id="name" placeholder="Name">
+        <input type="text" class="form-control" id="name" name="name" placeholder="Name">
       </div>
     </div>
     <div class="form-group">
       <label for="group" class="col-lg-3 control-label">Group</label>
       <div class="col-lg-9">
-        <input type="text" class="form-control" id="group" placeholder="Group">
+        <input type="text" class="form-control" id="group" name="group" placeholder="Group">
       </div>
     </div>
     <div class="form-group">
       <label for="amount" class="col-lg-3 control-label">Initial Stock</label>
       <div class="col-lg-9">
-        <input id="amount" type="text" class="form-control" placeholder="Amount">
+        <input id="amount" type="text" class="form-control" name="amount" placeholder="Amount">
       </div>
     </div>
     <div class="form-group"> 
@@ -50,7 +50,7 @@
       <div class="col-lg-9">
         <div id="valwrap" class="input-group">
           <span class="input-group-addon"><span class="glyphicon glyphicon-euro" aria-hidden="true"></span></span>
-          <input id="value" type="text" class="form-control" placeholder="Value">
+          <input id="value" type="text" class="form-control" name="value" placeholder="Value">
         </div>
       </div>
     </div>
@@ -59,10 +59,10 @@
       <div class="col-lg-9">
         <div id="inputOther" class="checkbox">
           <label class="col-lg-6">
-            <input type="checkbox"> Allow negative stock
+            <input name="allow_negative" type="checkbox"> Allow negative stock
           </label>
           <label class="col-lg-6">
-            <input type="checkbox"> Standard unit value
+            <input name="value_constant" type="checkbox"> Standard unit value
           </label>
         </div>
       </div>
@@ -88,9 +88,9 @@
       </div>
     </div>
     <div class="form-group">
-      <label for="lossmodselect" class="col-lg-3 control-label">Sell Mods</label>
+      <label for="losemodselect" class="col-lg-3 control-label">Sell Mods</label>
       <div class="col-lg-9">
-        <select id='lossmodselect' class="form-control">
+        <select id='losemodselect' class="form-control">
             <option value=0>Add mod on sell</option>
             {% for mod in mods %}
                 <option value={{ mod.id }}>{{ mod.name }}</option>
@@ -99,13 +99,12 @@
       </div>
     </div>
     <div class="form-group">
-      <label for="showlossmod" class="col-lg-3 control-label"></label>
-      <div id="showlossmod" class="col-lg-9">
+      <label for="showlosemod" class="col-lg-3 control-label"></label>
+      <div id="showlosemod" class="col-lg-9">
       </div>
     </div>
     <div class="form-group">
       <div class="col-lg-9 col-lg-offset-3">
-        <button type="reset" class="btn btn-default">Cancel</button>
         <button type="submit" class="btn btn-primary">Submit</button>
       </div>
     </div>
@@ -121,7 +120,7 @@
 <script type="text/javascript">
 // Some ugly jquery. On selecting from list, get the hidden div with the correct mod rendering. Append that to the box, apply popover and unselect list.
 var gainmods = [];
-var lossmods = [];
+var losemods = [];
 
 $('#gainmodselect').change(function() {
     if ($(this).val() != "0") {
@@ -149,30 +148,74 @@ function gain_reset(jq_object) {
     par.remove();
 }
 
-$('#lossmodselect').change(function() {
+$('#losemodselect').change(function() {
     if ($(this).val() != "0") {
         var val = $(this).val();
-        var el = $($("#div_mod_loss_content_".concat(val)).html());
-        $("#showlossmod").append(el);
+        var el = $($("#div_mod_lose_content_".concat(val)).html());
+        $("#showlosemod").append(el);
         el.data("svalue", val);
-        el.data("stext", $("#lossmodselect option:selected").text());
+        el.data("stext", $("#losemodselect option:selected").text());
         
         $("[data-toggle=popover]").popover();
-        $("#lossmodselect option[value='0']").prop("selected", true);
-        lossmods.push(+val)
+        $("#losemodselect option[value='0']").prop("selected", true);
+        losemods.push(+val)
         
-        $("#lossmodselect option[value='".concat(val).concat("']")).remove();
+        $("#losemodselect option[value='".concat(val).concat("']")).remove();
     }
 });
 
-function loss_reset(jq_object) {
+function lose_reset(jq_object) {
     var par = jq_object.parent();
-    $('#lossmodselect')
+    $('#losemodselect')
          .append($("<option></option>")
                     .attr("value",par.data("svalue"))
                     .text(par.data("stext")));
-    lossmods.splice(lossmods.indexOf(+par.data("svalue")), 1);
+    losemods.splice(losemods.indexOf(+par.data("svalue")), 1);
     par.remove();
 }
+
+$('#newproductform').on('submit', function(e) {
+    e.preventDefault();
+    var predata = {};
+    $("#newproductform").serializeArray().map(function(x){predata[x.name] = x.value;}); 
+    
+    console.log(predata)
+    
+    if (gainmods.length != 0) {
+        predata['gainmods'] = gainmods;
+    }
+    if (losemods.length != 0) {
+        predata['losemods'] = losemods;
+    }
+    
+    if (predata["value"] == "") {
+        delete predata["value"];
+    }
+    else {
+        predata["value"] = parseInt(parseFloat(predata["value"] ) * 100);
+    }
+    
+    if (predata["amount"] == "") {
+        delete predata["amount"];
+    }
+    else {
+        predata["amount"] = parseInt(predata["amount"]);
+    }
+    
+    console.log(predata)
+    
+    $.ajax({
+        cache: false,
+        type: 'POST',
+        dataType: 'json',
+        data : JSON.stringify(predata),
+        success: function(json) {
+            location.reload()
+        },
+        error: function(json) {
+            console.log(json);
+        }
+    });
+});
 </script>
 {% endblock %}

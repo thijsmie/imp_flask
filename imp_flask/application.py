@@ -4,15 +4,15 @@ from importlib import import_module
 import os
 import simplejson as json
 
-from flask import Flask
+from flask import Flask, request, session, abort
 from flask_bootstrap import Bootstrap
 from yaml import load
 
 from imp_flask.blueprints import all_blueprints
-from imp_flask.extensions import db, mail, csrf
-from imp_flask.paths import APP_ROOT_FOLDER, TEMPLATE_FOLDER, TEXTEMPLATE_FOLDER, STATIC_FOLDER, TEXSTATIC_FOLDER
+from imp_flask.extensions import db, mail, validate
+from imp_flask.paths import APP_ROOT_FOLDER, TEMPLATE_FOLDER, TEXTEMPLATE_FOLDER, STATIC_FOLDER, TEXSTATIC_FOLDER, VALIDATORS_FOLDER
 from imp_flask.core.latex import texenv
-from imp_flask.core.auth import auth, auth_hasher
+from imp_flask.core.auth import auth, auth_hasher, generate_random_string
 
 
 def get_config(config_class_string, yaml_files=None):
@@ -91,9 +91,27 @@ def create_app(config_obj, no_sql=False):
 
     Bootstrap(app)
     mail.init_app(app)
+    validate.init_app(app, VALIDATORS_FOLDER)
     auth.init_app(app)
-    csrf.init_app(app)
     auth_hasher.init_app(app)
+    
+    # Setup CSRF-protection
+    @app.before_request
+    def csrf_protect():
+        if request.method == "POST":
+            token = session.pop('_csrf_token', None)
+            if request.json and request.json['_csrf_token']:
+                if not token or token != request.json.get('_csrf_token'):
+                    abort(403)
+            if not token or token != request.form.get('_csrf_token'):
+                abort(403)
+
+    def generate_csrf_token():
+        if '_csrf_token' not in session:
+            session['_csrf_token'] = generate_random_string(16)
+        return session['_csrf_token']
+
+    app.jinja_env.globals['csrf_token'] = generate_csrf_token
 
     # Initialize latex module
     with open(os.path.join(APP_ROOT_FOLDER, "strings.json")) as fp:

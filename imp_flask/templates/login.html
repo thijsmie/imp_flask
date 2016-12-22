@@ -1,5 +1,5 @@
 {% if current_user.is_authenticated %}
-&nbsp;&nbsp;Logged in as {{ current_user.username }}. <a style="display:inline-block;" href="{{ url_for('home.index.logout') }}">Logout</a>
+Logged in as {{ current_user.username }}. <a style="display:inline-block;" href="{{ url_for('home.index.logout') }}">Logout</a>
 {% else %}
-&nbsp;&nbsp;<a href="{{ url_for('home.index.login') }}"> Click here to login.</a>
+<a href="{{ url_for('home.index.login') }}"> Click here to login.</a>
 {% endif %}

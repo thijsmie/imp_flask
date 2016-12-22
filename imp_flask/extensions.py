@@ -8,9 +8,9 @@ from logging import getLogger
 
 from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf.csrf import CsrfProtect
 from sqlalchemy.event import listens_for
 from sqlalchemy.pool import Pool
+from imp_flask.core.validate import Validator
 
 LOG = getLogger(__name__)
 
@@ -28,5 +28,4 @@ def _on_connect(dbapi_connection, **_):
 
 db = SQLAlchemy()
 mail = Mail()
-csrf = CsrfProtect()
-
+validate = Validator()

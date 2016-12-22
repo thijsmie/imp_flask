@@ -3,6 +3,7 @@ from flask_login import login_required
 
 from imp_flask.blueprints import relations
 from imp_flask.models.imps import Relation
+from imp_flask.extensions import db
 
 
 @relations.route('/', defaults=dict(page=1))

@@ -1,9 +1,11 @@
-from flask import render_template
+from flask import render_template, request
+from flask.json import jsonify
 from flask_login import login_required
 
 from imp_flask.blueprints import products
 from imp_flask.models.imps import Product, Mod
-from imp_flask.forms.product import Product as ProductForm
+from imp_flask.extensions import db, validate
+from imp_flask.core import flash
 
 
 @products.route('/', defaults=dict(page=1))
@@ -28,15 +30,31 @@ def showgroup(group, page):
     return render_template('imp_flask_products.html', showgroup=False, pagination=pagination)
 
 
-@products.route('/add')
+@products.route('/add', methods=["GET", "POST"])
 @login_required
 def addproduct():
-    form = ProductForm()
-    modlist = [(mod.id, mod.name) for mod in Mod.query.all()]
-    form.gainmods.choices = modlist
-    form.losemods.choices = modlist
-
-    if form.validate_on_submit():
-        return 'sumtin'
+    form = request.json
+    
+    if request.method == "POST":
+        errors = validate(form, 'newproduct', get_errors=True)
+        if type(errors) == list:
+            resp = jsonify(errors)
+            resp.status_code = 400
+            return resp
+        else:
+            product = Product()
+            product.name = form['name']
+            product.group = form['group']
+            product.amount = form.get('amount', 0)
+            product.value = form.get('value', 0)
+            product.allow_negative = form.get('allow_negative', False)
+            product.value_constant = form.get('value_constant', False)
+            product.hidden = False
+            product.losemods = form.get('losemods', [])
+            product.gainmods = form.get('gainmods', [])
+            
+            db.session.add(product)
+            db.session.commit()
+            
     return render_template('imp_flask_newproduct.html', form=form, mods=Mod.query.all())
 
