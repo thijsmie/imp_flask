@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+{% from 'imp_flask_general_helpers.html' import format_currency %}
+{% from 'imp_flask_mod_helpers.html' import render_mod_as_tag %}
+
+{% block container %}
+
+    <div>
+        <a href="{{ url_for('.index') }}">Back to all</a>
+    </div>
+
+{# render invisible div containers for mods #}
+{% for mod in mods %}
+    <div id="div_mod_gain_content_{{ mod.id }}" style="display:none;" >
+        <div class="btn-group" style="padding:4px">
+            {{ render_mod_as_tag(mod) }}
+            <a onclick="gain_reset($(this));" class="btn btn-sm btn-danger rm-mod-but"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+        </div>
+    </div>
+    <div id="div_mod_lose_content_{{ mod.id }}" style="display:none;" >
+        <div class="btn-group" style="padding:4px">
+            {{ render_mod_as_tag(mod) }}
+            <a onclick="lose_reset($(this));" class="btn btn-sm btn-danger rm-mod-but"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+        </div>
+    </div>
+{% endfor %}
+
+
+
+<form id="newproductform" class="form-horizontal" method="POST">
+<input id="_csrf_token" name="_csrf_token" type="hidden" value="{{ csrf_token() }}" />
+<div class="col-lg-6">
+<div class="well bs-component">
+  <fieldset>
+    <legend>Edit Product</legend>
+    <div class="form-group">
+      <label for="name" class="col-lg-3 control-label">Name</label>
+      <div class="col-lg-9">
+        <input type="text" class="form-control" id="name" name="name" placeholder="Name" value="{{ product.name }}" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="group" class="col-lg-3 control-label">Group</label>
+      <div class="col-lg-9">
+        <input type="text" class="form-control" id="group" name="group" placeholder="Group" value="{{ product.group }}" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="amount" class="col-lg-3 control-label">Initial Stock</label>
+      <div class="col-lg-9">
+        <input id="amount" type="text" class="form-control" name="amount" placeholder="Amount" value="{{ product.amount }}" />
+      </div>
+    </div>
+    <div class="form-group"> 
+      <label for="value" class="col-lg-3 control-label">Value</label>
+      <div class="col-lg-9">
+        <div id="valwrap" class="input-group">
+          <span class="input-group-addon"><span class="glyphicon glyphicon-euro" aria-hidden="true"></span></span>
+          <input id="value" type="text" class="form-control" name="value" placeholder="Value" value="{{ format_currency(product.value) }}" />
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="inputOther" class="col-lg-3 control-label">Behaviour</label>
+      <div class="col-lg-9">
+        <div id="inputOther" class="checkbox">
+          <label class="col-lg-6">
+            <input name="allow_negative" type="checkbox" {% if product.allow_negative %}checked{% endif %}> Allow negative stock
+          </label>
+          <label class="col-lg-6">
+            <input name="value_constant" type="checkbox" {% if product.value_constant %}checked{% endif %}> Standard unit value
+          </label>
+        </div>
+      </div>
+    </div>
+</div>
+</div>    
+<div class="col-lg-6"> 
+<div class="well bs-component">
+    <div class="form-group">
+      <label for="gainmodselect" class="col-lg-3 control-label">Buy Mods</label>
+      <div class="col-lg-9">
+        <select id='gainmodselect' class="form-control">
+            <option value=0>Add mod on buy</option>
+            {% for mod in mods %}
+                {% if mod not in product.gainmods %}
+                    <option value={{ mod.id }}>{{ mod.name }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="showgainmod" class="col-lg-3 control-label"></label>
+      <div id="showgainmod" class="col-lg-9">
+      {% for mod in product.gainmods %}
+        <div class="btn-group" style="padding:4px">
+            {{ render_mod_as_tag(mod) }}
+            <a onclick="$(this).data('svalue', {{ mod.id }}).data('stext', '{{ mod.name }}'); gain_reset($(this));" class="btn btn-sm btn-danger rm-mod-but"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="losemodselect" class="col-lg-3 control-label">Sell Mods</label>
+      <div class="col-lg-9">
+        <select id='losemodselect' class="form-control">
+            <option value=0>Add mod on sell</option>
+            {% for mod in mods %}
+                {% if mod not in product.losemods %}
+                    <option value={{ mod.id }}>{{ mod.name }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="showlosemod" class="col-lg-3 control-label"></label>
+      <div id="showlosemod" class="col-lg-9">
+        {% for mod in product.losemods %}
+        <div class="btn-group" style="padding:4px">
+            {{ render_mod_as_tag(mod) }}
+            <a onclick="$(this).data('svalue', {{ mod.id }}).data('stext', '{{ mod.name }}'); gain_reset($(this));" class="btn btn-sm btn-danger rm-mod-but"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-lg-9 col-lg-offset-3">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </fieldset>
+</div>
+</div>    
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+// Some ugly jquery. On selecting from list, get the hidden div with the correct mod rendering. Append that to the box, apply popover and unselect list.
+{% set comma1 = joiner(",") %}
+{% set comma2 = joiner(",") %}
+var gainmods = [{% for mod in product.gainmods %}{{ comma1() }}{{ mod.id }}{% endfor %}];
+var losemods = [{% for mod in product.losemods %}{{ comma2() }}{{ mod.id }}{% endfor %}];
+
+$('#gainmodselect').change(function() {
+    if ($(this).val() != "0") {
+        var val = $(this).val();
+        var el = $($("#div_mod_gain_content_".concat(val)).html());
+        $("#showgainmod").append(el);
+        el.data("svalue", val);
+        el.data("stext", $("#gainmodselect option:selected").text());
+        
+        $("[data-toggle=popover]").popover();
+        $("#gainmodselect option[value='0']").prop("selected", true);
+        gainmods.push(+val)
+        
+        $("#gainmodselect option[value='".concat(val).concat("']")).remove();
+    }
+});
+
+function gain_reset(jq_object) {
+    var par = jq_object.parent();
+    $('#gainmodselect')
+         .append($("<option></option>")
+                    .attr("value",par.data("svalue"))
+                    .text(par.data("stext")));
+    gainmods.splice(gainmods.indexOf(+par.data("svalue")), 1);
+    par.remove();
+}
+
+$('#losemodselect').change(function() {
+    if ($(this).val() != "0") {
+        var val = $(this).val();
+        var el = $($("#div_mod_lose_content_".concat(val)).html());
+        $("#showlosemod").append(el);
+        el.data("svalue", val);
+        el.data("stext", $("#losemodselect option:selected").text());
+        
+        $("[data-toggle=popover]").popover();
+        $("#losemodselect option[value='0']").prop("selected", true);
+        losemods.push(+val)
+        
+        $("#losemodselect option[value='".concat(val).concat("']")).remove();
+    }
+});
+
+function lose_reset(jq_object) {
+    var par = jq_object.parent();
+    $('#losemodselect')
+         .append($("<option></option>")
+                    .attr("value",par.data("svalue"))
+                    .text(par.data("stext")));
+    losemods.splice(losemods.indexOf(+par.data("svalue")), 1);
+    par.remove();
+}
+
+$('#newproductform').on('submit', function(e) {
+    if (gainmods.length != 0) {
+        $('<input />').attr('type', 'hidden')
+          .attr('name', "gainmods")
+          .attr('value', gainmods.join())
+          .appendTo('#newproductform');
+    }
+    
+    if (losemods.length != 0) {
+        $('<input />').attr('type', 'hidden')
+          .attr('name', "losemods")
+          .attr('value', losemods.join())
+          .appendTo('#newproductform');
+    }
+    
+    var value = $('#value');
+    var amount = $('#amount');
+    
+    if (value.val() == "") {
+        // Disabled inputs don't get submitted ;)
+        value.attr("disabled", "disabled");
+    }
+    else {
+        value.val(parseInt(parseFloat(value.val().replace(',','.')) * 100.0));
+    }
+    
+    if (amount.val() == "") {
+        // Disabled inputs don't get submitted ;)
+        amount.attr("disabled", "disabled");
+    }
+    else {
+        amount.val(parseInt(amount.val()));
+    }
+    
+    return true;
+});
+</script>
+{% endblock %}

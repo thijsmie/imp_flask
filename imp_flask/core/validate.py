@@ -28,6 +28,6 @@ class Validator:
             self.validators[schema].validate(obj)
         except:
             if get_errors:
-                return [error.message for error in sorted(self.validators[schema].iter_errors(obj), key=str)]
+                return [error for error in sorted(self.validators[schema].iter_errors(obj), key=str)]
             return False
         return True

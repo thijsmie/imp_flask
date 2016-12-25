@@ -92,7 +92,7 @@ def setup_logging(name=None):
     root.addHandler(console_handler)
 
     if log_to_disk:
-        file_name = os.path.join(OPTIONS['--log_dir'], 'pypi_portal_{}.log'.format(name))
+        file_name = os.path.join(OPTIONS['--log_dir'], 'imp_flask_{}.log'.format(name))
         file_handler = logging.handlers.TimedRotatingFileHandler(file_name, when='d', backupCount=7)
         file_handler.setFormatter(formatter)
         root.addHandler(file_handler)

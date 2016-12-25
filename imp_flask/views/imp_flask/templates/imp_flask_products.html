@@ -30,17 +30,23 @@
                 {% for product in pagination.items %}
                     <tr>
                         <td>{{ product.id }}</td>
-                        <td>{{ product.name }}</td>
+                        <td><a href="{{ url_for('.editproduct', product_id=product.id) }}">{{ product.name }}</a></td>
                         {% if showgroup -%}
                             <td><a href="{{ url_for('.showgroup', group=product.group) }}">{{ product.group }}</a></td>
                         {%- endif %}
-                        {% if product.amount == 0 -%}
-                        <td align="right">0.00</td>
+                        {% if product.value_constant -%}
+                            <td align="right"><abbr title="Constant">{{ format_currency(product.value) }}</abbr></td>
+                            <td align="right">{{ product.amount }}</td>
+                            <td align="right">{{ format_currency(product.value * product.amount) }}</td>
                         {%- else -%}
-                        <td align="right">{{ format_currency(product.value / (product.amount | float)) }}</td>
-                        {%- endif %}
-                        <td align="right">{{ product.amount }}</td>
-                        <td align="right">{{ format_currency(product.value) }}</td>
+                            {% if product.amount == 0 -%}
+                            <td align="right">0.00</td>
+                            {%- else -%}
+                            <td align="right">{{ format_currency(product.value / (product.amount | float)) }}</td>
+                            {%- endif %}
+                            <td align="right">{{ product.amount }}</td>
+                            <td align="right">{{ format_currency(product.value) }}</td>
+                        {%- endif -%}
                         <td>{% for mod in product.gainmods %}{{ render_mod_as_tag(mod) }}{% endfor %}</td>
                         <td>{% for mod in product.losemods %}{{ render_mod_as_tag(mod) }}{% endfor %}</td>
                     </tr>

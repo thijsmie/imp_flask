@@ -3,6 +3,10 @@
 
 {% block container %}
 
+    <div>
+        <a href="{{ url_for('.index') }}">Back to all</a>
+    </div>
+
 {# render invisible div containers for mods #}
 {% for mod in mods %}
     <div id="div_mod_gain_content_{{ mod.id }}" style="display:none;" >
@@ -21,7 +25,7 @@
 
 
 
-<form id="newproductform" class="form-horizontal">
+<form id="newproductform" class="form-horizontal" method="POST">
 <input id="_csrf_token" name="_csrf_token" type="hidden" value="{{ csrf_token() }}" />
 <div class="col-lg-6">
 <div class="well bs-component">
@@ -175,47 +179,40 @@ function lose_reset(jq_object) {
 }
 
 $('#newproductform').on('submit', function(e) {
-    e.preventDefault();
-    var predata = {};
-    $("#newproductform").serializeArray().map(function(x){predata[x.name] = x.value;}); 
-    
-    console.log(predata)
-    
     if (gainmods.length != 0) {
-        predata['gainmods'] = gainmods;
+        $('<input />').attr('type', 'hidden')
+          .attr('name', "gainmods")
+          .attr('value', gainmods.join())
+          .appendTo('#newproductform');
     }
+    
     if (losemods.length != 0) {
-        predata['losemods'] = losemods;
+        $('<input />').attr('type', 'hidden')
+          .attr('name', "losemods")
+          .attr('value', losemods.join())
+          .appendTo('#newproductform');
     }
     
-    if (predata["value"] == "") {
-        delete predata["value"];
+    var value = $('#value');
+    var amount = $('#amount');
+    
+    if (value.val() == "") {
+        // Disabled inputs don't get submitted ;)
+        value.attr("disabled", "disabled");
     }
     else {
-        predata["value"] = parseInt(parseFloat(predata["value"] ) * 100);
+        value.val(parseInt(parseFloat(value.val().replace(',','.')) * 100.0));
     }
     
-    if (predata["amount"] == "") {
-        delete predata["amount"];
+    if (amount.val() == "") {
+        // Disabled inputs don't get submitted ;)
+        amount.attr("disabled", "disabled");
     }
     else {
-        predata["amount"] = parseInt(predata["amount"]);
+        amount.val(parseInt(amount.val()));
     }
     
-    console.log(predata)
-    
-    $.ajax({
-        cache: false,
-        type: 'POST',
-        dataType: 'json',
-        data : JSON.stringify(predata),
-        success: function(json) {
-            location.reload()
-        },
-        error: function(json) {
-            console.log(json);
-        }
-    });
+    return true;
 });
 </script>
 {% endblock %}

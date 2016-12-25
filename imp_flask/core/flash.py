@@ -8,50 +8,30 @@ PyCharm will tell you which type of messages are supported.
 from flask import flash
 
 
-def _escape(message):
-    """Escape some characters in a message. Make them HTML friendly.
-
-    Positional arguments:
-    message -- the string to process.
-
-    Returns:
-    Escaped string.
-    """
-    translations = {
-        '"': '&quot;',
-        "'": '&#39;',
-        '`': '&lsquo;',
-        '\n': '<br>',
-        }
-    for k, v in translations.items():
-        message = message.replace(k, v)
-
-    return message
-
-
 def default(message):
-    return flash(_escape(message), 'default')
+    return flash(message, 'default')
 
 
 def success(message):
-    return flash(_escape(message), 'success')
+    return flash(message, 'success')
 
 
 def info(message):
-    return flash(_escape(message), 'info')
+    return flash(message, 'info')
 
 
 def warning(message):
-    return flash(_escape(message), 'warning')
+    return flash(message, 'warning')
 
 
 def danger(message):
-    return flash(_escape(message), 'danger')
+    return flash(message, 'danger')
 
 
 def well(message):
-    return flash(_escape(message), 'well')
+    return flash(message, 'well')
 
 
 def modal(message):
-    return flash(_escape(message), 'modal')
+    return flash(message, 'modal')
+    

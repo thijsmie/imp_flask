@@ -9,7 +9,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     {{ super() }}
     <link rel="shortcut icon" href="/static/favicon.ico?" />
-    <link rel="stylesheet" href="/static/custombootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/custombootstrap.min.css">
+    <link href="/static/css/sticky-footer-navbar.css" rel="stylesheet">
     <style type="text/css">
         @-moz-document url-prefix() {
           fieldset { display: table-cell; }
@@ -51,4 +52,9 @@
     {% block container %}
     {% endblock %}
 </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-muted">Made by Thijs Miedema, view on <a class="btn btn-default btn-xs" href="https://github.com/thijsmie/imp_flask">GitHub</a></p>{% block footer %}{% endblock %}
+  </div>
+</footer>
 {% endblock %}
