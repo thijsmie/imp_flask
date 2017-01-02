@@ -33,76 +33,66 @@ def showgroup(group, page):
 @products.route('/add', methods=["GET", "POST"])
 @login_required
 def addproduct():
-    form = request.form
+    form = request.json
     
     if request.method == "POST":
         errors = validate(form, 'newproduct', get_errors=True)
         if type(errors) == list:
+            messages = []
             for error in errors:
-                flash.warning('.'.join(list(error.path)) + ": " + error.message)
-            return redirect(url_for('.addproduct'))
+                messages.append('.'.join(list(error.path)) + ": " + error.message)
+            response = jsonify(messages=messages)
+            response.status_code = 400
+            return response
         else:
             product = Product()
             product.name = form['name']
             product.group = form['group']
-            product.amount = int(form.get('amount', '0'))
-            product.value = int(form.get('value', '0'))
-            product.allow_negative = form.get('allow_negative', '') != ''
-            product.value_constant = form.get('value_constant', '') != ''
+            product.amount = form.get('amount', 0)
+            product.value = form.get('value', 0)
+            product.allow_negative = form.get('allow_negative', False)
+            product.value_constant = form.get('value_constant', False)
             product.hidden = False
-            
-            if 'losemods' in form:
-                product.losemods = [Mod.query.get_or_404(int(m_id)) for m_id in form.get('losemods', '').split(',')]
-                
-            if 'gainmods' in form:
-                product.gainmods = [Mod.query.get_or_404(int(m_id)) for m_id in form.get('gainmods', '').split(',')]
+            product.losemods = [Mod.query.get(id) for id in (form['losemods'] or [])]
+            product.gainmods = [Mod.query.get(id) for id in (form['gainmods'] or [])]
             
             db.session.add(product)
             db.session.commit()
-            
-            flash.success("Product " + product.name + " was added to the database.")
-            return redirect(url_for('.addproduct'))
+            return jsonify({})
             
     return render_template('imp_flask_newproduct.html', mods=Mod.query.all())
     
     
 @products.route('/edit/<int:product_id>', methods=["GET", "POST"])
 @login_required
-def editproduct(product_id):
-    form = request.form
+def editproduct():
+    form = request.json
     
     product = Product.query.get_or_404(product_id)
     
     if request.method == "POST":
-        errors = validate(form, 'newproduct', get_errors=True)
+        errors = validate(form, 'product', get_errors=True)
         if type(errors) == list:
+            messages = []
             for error in errors:
-                flash.warning('.'.join(list(error.path)) + ": " + error.message)
-            return redirect(url_for('.editproduct', product_id=product_id))
-        else:      
+                messages.append('.'.join(list(error.path)) + ": " + error.message)
+            response = jsonify(messages=messages)
+            response.status_code = 400
+            return response
+        else:
             product.name = form['name']
             product.group = form['group']
-            product.amount = int(form.get('amount', '0'))
-            product.value = int(form.get('value', '0'))
-            product.allow_negative = form.get('allow_negative', '') != ''
-            product.value_constant = form.get('value_constant', '') != ''
+            product.amount = form.get('amount', 0)
+            product.value = form.get('value', 0)
+            product.allow_negative = form.get('allow_negative', False)
+            product.value_constant = form.get('value_constant', False)
             product.hidden = False
+            product.losemods = [Mod.query.get(id) for id in (form['losemods'] or [])]
+            product.gainmods = [Mod.query.get(id) for id in (form['gainmods'] or [])]
             
-            if 'losemods' in form:
-                product.losemods = [Mod.query.get_or_404(int(m_id)) for m_id in form.get('losemods', '').split(',')]
-            else:
-                product.losemods = []
-                
-            if 'gainmods' in form:
-                product.gainmods = [Mod.query.get_or_404(int(m_id)) for m_id in form.get('gainmods', '').split(',')]
-            else:
-                product.gainmods = []
-            
+            db.session.add(product)
             db.session.commit()
+            return jsonify({})
             
-            flash.success("Product " + product.name + " was successfully edited.")
-            return redirect(url_for('.editproduct', product_id=product_id))
-            
-    return render_template('imp_flask_editproduct.html', product=product, mods=Mod.query.all())    
+    return render_template('imp_flask_newproduct.html', product=product mods=Mod.query.all())
     
-

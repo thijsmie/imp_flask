@@ -2,7 +2,8 @@
 
 {% block container %}
 
-<form class="form-horizontal">
+<form id="newrelationform" class="form-horizontal" method="POST">
+<input id="_csrf_token" name="_csrf_token" type="hidden" value="{{ csrf_token() }}" />
 <div class="col-lg-6">
 <div class="well bs-component">
   <fieldset>
@@ -10,13 +11,13 @@
     <div class="form-group">
       <label for="name" class="col-lg-3 control-label">Name</label>
       <div class="col-lg-9">
-        <input type="text" class="form-control" id="name" placeholder="Name">
+        <input type="text" class="form-control" id="name" name="name" placeholder="Name">
       </div>
     </div>
     <div class="form-group">
       <label for="group" class="col-lg-3 control-label">Email</label>
       <div class="col-lg-9">
-        <input type="text" class="form-control" id="group" placeholder="Email">
+        <input type="text" class="form-control" id="group" name="group" placeholder="Email">
       </div>
     </div>
     <div class="form-group">
@@ -24,7 +25,7 @@
       <div class="col-lg-9">
         <div id="valwrap" class="input-group">
           <span class="input-group-addon"><span class="glyphicon glyphicon-euro" aria-hidden="true"></span></span>
-          <input id="value" type="text" class="form-control" placeholder="Budget">
+          <input id="value" name="value" type="text" class="form-control" placeholder="Budget">
         </div>
       </div>
     </div>
@@ -33,20 +34,19 @@
       <div class="col-lg-9">
         <div id="inputOther" class="checkbox">
           <label class="col-md-12">
-            <input type="checkbox"> Send transactions
+            <input name="send_transaction" type="checkbox"> Send transactions
           </label>
           <label class="col-md-12">
-            <input type="checkbox"> Send transaction updates
+            <input name="send_transaction_updates" type="checkbox"> Send transaction updates
           </label>
             <label class="col-md-12">
-            <input type="checkbox"> Send budget warnings
+            <input name="send_budget_warnings" type="checkbox"> Send budget warnings
           </label>
         </div>
       </div>
     </div>
       <div class="form-group">
       <div class="col-lg-9 col-lg-offset-3">
-        <button type="reset" class="btn btn-default">Cancel</button>
         <button type="submit" class="btn btn-primary">Submit</button>
       </div>
     </div>

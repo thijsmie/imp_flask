@@ -3,7 +3,7 @@ from flask_login import login_required
 
 from imp_flask.blueprints import relations
 from imp_flask.models.imps import Relation
-from imp_flask.extensions import db
+from imp_flask.extensions import db, validate
 
 
 @relations.route('/', defaults=dict(page=1))
@@ -20,9 +20,16 @@ def index(page):
 @relations.route('/add')
 @login_required
 def addrelation():
-    form = None
+    form = request.form
 
-    #if form.validate_on_submit():
-     #   return 'sumtin'
+    if request.method == "POST":
+        errors = validate(form, 'newrelation', get_errors=True)
+        if type(errors) == list:
+            for error in errors:
+                flash.warning('.'.join(list(error.path)) + ": " + error.message)
+            return redirect(url_for('.addrelation'))
+        else:
+            relation = Relation(form['name'], form['email'])
+            #TODO, rest of this mess
     return render_template('imp_flask_newrelation.html', form=form)
 

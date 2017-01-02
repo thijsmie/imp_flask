@@ -98,13 +98,15 @@ def create_app(config_obj, no_sql=False):
     # Setup CSRF-protection
     @app.before_request
     def csrf_protect():
-        if request.method == "POST":
-            token = session.pop('_csrf_token', None)
+        if request.method == "POST":          
             if request.json and request.json['_csrf_token']:
+                token = session.get('_csrf_token', None)
                 if not token or token != request.json.get('_csrf_token'):
                     abort(403)
-            if not token or token != request.form.get('_csrf_token'):
-                abort(403)
+            else:
+                token = session.pop('_csrf_token', None)
+                if not token or token != request.form.get('_csrf_token'):
+                    abort(403)
 
     def generate_csrf_token():
         if '_csrf_token' not in session:

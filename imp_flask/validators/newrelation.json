@@ -1,12 +1,11 @@
 {
     "type": "object",
     "properties": {
-        "name":     {"type": "string"},
-        "email":    {"type": "string"},
+        "name":     {"type": "string", "required": true},
+        "email":    {"type": "string", "required": true},
         "budget":   {"type": "integer"},
         "send_transaction":         {"type": "boolean"},
         "send_transaction_updates": {"type": "boolean"},
         "send_budget_warnings":     {"type": "boolean"}
     },
-    "required": ["name", "email"]
 }

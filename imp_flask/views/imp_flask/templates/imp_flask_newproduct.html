@@ -25,8 +25,7 @@
 
 
 
-<form id="newproductform" class="form-horizontal" method="POST">
-<input id="_csrf_token" name="_csrf_token" type="hidden" value="{{ csrf_token() }}" />
+<form id="newproductform" class="form-horizontal">
 <div class="col-lg-6">
 <div class="well bs-component">
   <fieldset>
@@ -34,19 +33,19 @@
     <div class="form-group">
       <label for="name" class="col-lg-3 control-label">Name</label>
       <div class="col-lg-9">
-        <input type="text" class="form-control" id="name" name="name" placeholder="Name">
+        <input type="text" class="form-control" id="name" placeholder="Name">
       </div>
     </div>
     <div class="form-group">
       <label for="group" class="col-lg-3 control-label">Group</label>
       <div class="col-lg-9">
-        <input type="text" class="form-control" id="group" name="group" placeholder="Group">
+        <input type="text" class="form-control" id="group" placeholder="Group">
       </div>
     </div>
     <div class="form-group">
       <label for="amount" class="col-lg-3 control-label">Initial Stock</label>
       <div class="col-lg-9">
-        <input id="amount" type="text" class="form-control" name="amount" placeholder="Amount">
+        <input id="amount" type="text" class="form-control" placeholder="Amount">
       </div>
     </div>
     <div class="form-group"> 
@@ -54,7 +53,7 @@
       <div class="col-lg-9">
         <div id="valwrap" class="input-group">
           <span class="input-group-addon"><span class="glyphicon glyphicon-euro" aria-hidden="true"></span></span>
-          <input id="value" type="text" class="form-control" name="value" placeholder="Value">
+          <input id="value" type="text" class="form-control" placeholder="Value">
         </div>
       </div>
     </div>
@@ -63,10 +62,10 @@
       <div class="col-lg-9">
         <div id="inputOther" class="checkbox">
           <label class="col-lg-6">
-            <input name="allow_negative" type="checkbox"> Allow negative stock
+            <input id="allow_negative" type="checkbox"> Allow negative stock
           </label>
           <label class="col-lg-6">
-            <input name="value_constant" type="checkbox"> Standard unit value
+            <input id="value_constant" type="checkbox"> Standard unit value
           </label>
         </div>
       </div>
@@ -109,7 +108,7 @@
     </div>
     <div class="form-group">
       <div class="col-lg-9 col-lg-offset-3">
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" onclick="submit_product();" class="btn btn-primary">Submit</button>
       </div>
     </div>
   </fieldset>
@@ -177,42 +176,34 @@ function lose_reset(jq_object) {
     losemods.splice(losemods.indexOf(+par.data("svalue")), 1);
     par.remove();
 }
+var tosubmit = {};
+function submit_product() {
+    
+    
+    if (field_validate_int_or_none('#amount') &&
+        field_validate_money_or_none('#value') &&
+        $('#name').val().length > 3) {
+        
+        tosubmit.name = $('#name').val();
+        tosubmit.group = $('#group').val();
+        
+        if ($('#amount').val() != "")
+            tosubmit.amount = parseInt($('#amount').val());
+        
+        if ($('#value').val() != "")    
+            tosubmit.value = parseInt(parseFloat($('#value').val()) * 100.0);
+        
+        tosubmit.gainmods = gainmods;
+        tosubmit.losemods = losemods;
+        tosubmit.value_constant = $("#value_constant").prop("checked");
+        tosubmit.allow_negative = $("#allow_negative").prop("checked");
+        
+        post_object(tosubmit, "/products/add", "/products");
+    }
 
-$('#newproductform').on('submit', function(e) {
-    if (gainmods.length != 0) {
-        $('<input />').attr('type', 'hidden')
-          .attr('name', "gainmods")
-          .attr('value', gainmods.join())
-          .appendTo('#newproductform');
-    }
-    
-    if (losemods.length != 0) {
-        $('<input />').attr('type', 'hidden')
-          .attr('name', "losemods")
-          .attr('value', losemods.join())
-          .appendTo('#newproductform');
-    }
-    
-    var value = $('#value');
-    var amount = $('#amount');
-    
-    if (value.val() == "") {
-        // Disabled inputs don't get submitted ;)
-        value.attr("disabled", "disabled");
-    }
-    else {
-        value.val(parseInt(parseFloat(value.val().replace(',','.')) * 100.0));
-    }
-    
-    if (amount.val() == "") {
-        // Disabled inputs don't get submitted ;)
-        amount.attr("disabled", "disabled");
-    }
-    else {
-        amount.val(parseInt(amount.val()));
-    }
     
     return true;
-});
+}
+
 </script>
 {% endblock %}
