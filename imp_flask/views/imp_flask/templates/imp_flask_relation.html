@@ -19,13 +19,13 @@
       </div>
     </div>
     <div class="form-group">
-      <label for="group" class="col-lg-3 control-label">Email</label>
+      <label for="email" class="col-lg-3 control-label">Email</label>
       <div class="col-lg-9">
         <input type="text" class="form-control" id="email" placeholder="Email" value="{% if relation %}{{ relation.email }}{% endif %}">
       </div>
     </div>
     <div class="form-group">
-      <label for="value" class="col-lg-3 control-label">Budget</label>
+      <label for="budget" class="col-lg-3 control-label">Budget</label>
       <div class="col-lg-9">
         <div id="valwrap" class="input-group">
           <span class="input-group-addon"><span class="glyphicon glyphicon-euro" aria-hidden="true"></span></span>
@@ -38,20 +38,21 @@
       <div class="col-lg-9">
         <div id="inputOther" class="checkbox">
           <label class="col-md-12">
-            <input name="send_transaction" type="checkbox" {% if relation and relation.send_transaction %}checked{% endif %}> Send transactions
+            <input id="send_transaction" type="checkbox" {% if relation and relation.send_transaction %}checked{% endif %}> Send transactions
           </label>
           <label class="col-md-12">
-            <input name="send_transaction_updates" type="checkbox" {% if relation and relation.send_transaction_updates %}checked{% endif %}> Send transaction updates
+            <input id="send_transaction_updates" type="checkbox" {% if relation and relation.send_transaction_updates %}checked{% endif %}> Send transaction updates
           </label>
             <label class="col-md-12">
-            <input name="send_budget_warnings" type="checkbox" {% if relation and relation.send_budget_warnings %}checked{% endif %}> Send budget warnings
+            <input id="send_budget_warnings" type="checkbox" {% if relation and relation.send_budget_warnings %}checked{% endif %}> Send budget warnings
           </label>
         </div>
       </div>
     </div>
       <div class="form-group">
       <div class="col-lg-9 col-lg-offset-3">
-        <button type="button" onclick="submit_object()" class="btn btn-primary">Submit</button>
+        <button type="button" onclick="submit_relation();" class="btn btn-success">Submit</button>
+        <a class="btn btn-default" href="{{ url_for('.index') }}">Back to all</a>
       </div>
     </div>
   </fieldset>
@@ -64,15 +65,15 @@
 {% block scripts %}
 {{ super() }}
 <script type="text/javascript">
-function submit_product() {  
+function submit_relation() {  
     var tosubmit = {};
     if (field_validate_money_or_none('#budget')) {
         
         tosubmit.name = $('#name').val();
         tosubmit.email = $('#email').val();
         
-        if ($('#value').val() != "")    
-            tosubmit.value = parseInt(parseFloat($('#value').val()) * 100.0);
+        if ($('#budget').val() != "")    
+            tosubmit.budget = parseInt(parseFloat($('#budget').val()) * 100.0);
 
         tosubmit.send_transaction = $("#send_transaction").prop("checked");
         tosubmit.send_transaction_updates = $("#send_transaction_updates").prop("checked");

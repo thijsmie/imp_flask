@@ -1,12 +1,8 @@
 {% extends 'base.html' %}
 {% from 'imp_flask_mod_helpers.html' import render_mod_as_tag %}
+{% from 'imp_flask_general_helpers.html' import format_currency %}
 
 {% block container %}
-
-    <div>
-        <a href="{{ url_for('.index') }}">Back to all</a>
-    </div>
-
 {# render invisible div containers for mods #}
 {% for mod in mods %}
     <div id="div_mod_gain_content_{{ mod.id }}" style="display:none;" >
@@ -23,37 +19,39 @@
     </div>
 {% endfor %}
 
-
-
-<form id="newproductform" class="form-horizontal">
+<form class="form-horizontal">
 <div class="col-lg-6">
 <div class="well bs-component">
   <fieldset>
-    <legend>New Product</legend>
+    {% if product -%}
+    <legend>Edit Product</legend>
+    {%- else -%}
+    <legend>Add Product</legend>
+    {%- endif -%}
     <div class="form-group">
       <label for="name" class="col-lg-3 control-label">Name</label>
       <div class="col-lg-9">
-        <input type="text" class="form-control" id="name" placeholder="Name">
+        <input type="text" class="form-control" id="name" placeholder="Name" value="{% if product %}{{ product.name or '' }}{% endif %}" />
       </div>
     </div>
     <div class="form-group">
       <label for="group" class="col-lg-3 control-label">Group</label>
       <div class="col-lg-9">
-        <input type="text" class="form-control" id="group" placeholder="Group">
+        <input type="text" class="form-control" id="group" placeholder="Group" value="{% if product %}{{ product.group }}{% endif %}" />
       </div>
     </div>
     <div class="form-group">
-      <label for="amount" class="col-lg-3 control-label">Initial Stock</label>
+      <label for="amount" class="col-lg-3 control-label">In Stock</label>
       <div class="col-lg-9">
-        <input id="amount" type="text" class="form-control" placeholder="Amount">
+        <input id="amount" type="text" class="form-control" placeholder="Amount" value="{% if product %}{{ product.amount }}{% endif %}" />
       </div>
     </div>
     <div class="form-group"> 
-      <label for="value" class="col-lg-3 control-label">Value</label>
+      <label for="value" class="col-lg-3 control-label"><span id="value_label"></span> Value</label>
       <div class="col-lg-9">
         <div id="valwrap" class="input-group">
           <span class="input-group-addon"><span class="glyphicon glyphicon-euro" aria-hidden="true"></span></span>
-          <input id="value" type="text" class="form-control" placeholder="Value">
+          <input id="value" type="text" class="form-control" name="value" placeholder="Value" value="{% if product %}{{ format_currency(product.value) }}{% endif %}" />
         </div>
       </div>
     </div>
@@ -62,10 +60,13 @@
       <div class="col-lg-9">
         <div id="inputOther" class="checkbox">
           <label class="col-lg-6">
-            <input id="allow_negative" type="checkbox"> Allow negative stock
+            <input id="allow_negative" type="checkbox" {% if product and product.allow_negative %}checked{% endif %}> Allow negative stock
           </label>
           <label class="col-lg-6">
-            <input id="value_constant" type="checkbox"> Standard unit value
+            <input id="value_constant" type="checkbox" {% if product and product.value_constant %}checked{% endif %}> Standard unit value
+          </label>
+          <label class="col-lg-6">
+            <input id="hidden" type="checkbox" {% if product and product.hidden %}checked{% endif %}> Hidden
           </label>
         </div>
       </div>
@@ -80,7 +81,9 @@
         <select id='gainmodselect' class="form-control">
             <option value=0>Add mod on buy</option>
             {% for mod in mods %}
-                <option value={{ mod.id }}>{{ mod.name }}</option>
+                {% if not product or mod not in product.gainmods %}
+                    <option value={{ mod.id }}>{{ mod.name }}</option>
+                {% endif %}
             {% endfor %}
         </select>
       </div>
@@ -88,6 +91,12 @@
     <div class="form-group">
       <label for="showgainmod" class="col-lg-3 control-label"></label>
       <div id="showgainmod" class="col-lg-9">
+      {% if product %}{% for mod in product.gainmods %}
+        <div class="btn-group" style="padding:4px">
+            {{ render_mod_as_tag(mod) }}
+            <a onclick="gain_reset_preset($(this), {{ mod.id }}, '{{ mod.name }}');" class="btn btn-sm btn-danger rm-mod-but"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+        </div>
+      {% endfor %}{% endif %}
       </div>
     </div>
     <div class="form-group">
@@ -96,7 +105,9 @@
         <select id='losemodselect' class="form-control">
             <option value=0>Add mod on sell</option>
             {% for mod in mods %}
-                <option value={{ mod.id }}>{{ mod.name }}</option>
+                {% if not product or mod not in product.losemods %}
+                    <option value={{ mod.id }}>{{ mod.name }}</option>
+                {% endif %}
             {% endfor %}
         </select>
       </div>
@@ -104,11 +115,18 @@
     <div class="form-group">
       <label for="showlosemod" class="col-lg-3 control-label"></label>
       <div id="showlosemod" class="col-lg-9">
+        {% if product %}{% for mod in product.losemods %}
+        <div class="btn-group" style="padding:4px">
+            {{ render_mod_as_tag(mod) }}
+            <a onclick="lose_reset_preset($(this), {{ mod.id }}, '{{ mod.name }}');" class="btn btn-sm btn-danger rm-mod-but"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+        </div>
+      {% endfor %}{% endif %}
       </div>
     </div>
     <div class="form-group">
       <div class="col-lg-9 col-lg-offset-3">
-        <button type="button" onclick="submit_product();" class="btn btn-primary">Submit</button>
+        <button type="button" onclick="submit_product();" class="btn btn-success">Submit</button>
+        <a class="btn btn-default" href="{{ url_for('.index') }}">Back to all</a>
       </div>
     </div>
   </fieldset>
@@ -122,8 +140,15 @@
 {{ super() }}
 <script type="text/javascript">
 // Some ugly jquery. On selecting from list, get the hidden div with the correct mod rendering. Append that to the box, apply popover and unselect list.
+{% if product %}
+{% set comma1 = joiner(",") %}
+{% set comma2 = joiner(",") %}
+var gainmods = [{% for mod in product.gainmods %}{{ comma1() }}{{ mod.id }}{% endfor %}];
+var losemods = [{% for mod in product.losemods %}{{ comma2() }}{{ mod.id }}{% endfor %}];
+{% else %}
 var gainmods = [];
 var losemods = [];
+{% endif %}
 
 $('#gainmodselect').change(function() {
     if ($(this).val() != "0") {
@@ -148,6 +173,16 @@ function gain_reset(jq_object) {
                     .attr("value",par.data("svalue"))
                     .text(par.data("stext")));
     gainmods.splice(gainmods.indexOf(+par.data("svalue")), 1);
+    par.remove();
+}
+
+function gain_reset_preset(jq_object, svalue, stext) {
+    var par = jq_object.parent();
+    $('#gainmodselect')
+         .append($("<option></option>")
+                    .attr("value", svalue)
+                    .text(stext));
+    gainmods.splice(gainmods.indexOf(+svalue), 1);
     par.remove();
 }
 
@@ -176,10 +211,31 @@ function lose_reset(jq_object) {
     losemods.splice(losemods.indexOf(+par.data("svalue")), 1);
     par.remove();
 }
-var tosubmit = {};
-function submit_product() {
-    
-    
+
+function lose_reset_preset(jq_object, svalue, stext) {
+    var par = jq_object.parent();
+    $('#losemodselect')
+         .append($("<option></option>")
+                    .attr("value", svalue)
+                    .text(stext));
+    losemods.splice(losemods.indexOf(+svalue), 1);
+    par.remove();
+}
+
+function change_label() {
+    if ($('#value_constant').prop('checked')) {
+        $('#value_label').text('Unit');
+    }
+    else {
+        $('#value_label').text('Total');
+    }
+}
+
+$('#value_constant').change(change_label);
+change_label();
+
+function submit_product() {  
+    var tosubmit = {};
     if (field_validate_int_or_none('#amount') &&
         field_validate_money_or_none('#value') &&
         $('#name').val().length > 3) {
@@ -197,13 +253,10 @@ function submit_product() {
         tosubmit.losemods = losemods;
         tosubmit.value_constant = $("#value_constant").prop("checked");
         tosubmit.allow_negative = $("#allow_negative").prop("checked");
+        tosubmit.hidden = $("#hidden").prop("checked");
         
-        post_object(tosubmit, "/products/add", "/products");
+        post_object(tosubmit, "/products");
     }
-
-    
-    return true;
 }
-
 </script>
 {% endblock %}

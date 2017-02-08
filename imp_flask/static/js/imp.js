@@ -1,11 +1,10 @@
 /// IMP functionality
 
-function post_object(object, endpoint, redirect) {
+function post_object(object, redirect) {
     object["_csrf_token"] = $('meta[name=csrf-token]').attr('content');
     console.log(JSON.stringify(object));
     $.ajax({
         type: "POST",
-        url: endpoint,
         data: JSON.stringify(object),
         contentType: "application/json; charset=utf-8",
         dataType: "json",

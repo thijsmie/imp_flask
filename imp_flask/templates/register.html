@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block container %}
+<div class="col-md-8">
+    <br><br><br>
+    <blockquote class="blockquote-reverse">
+  <p>{{ quote }}</p>
+  <small><cite title="Source Title">Donald Trump</cite></small>
+</blockquote>
+</div>
+<div class="col-md-4">
+    <form class="form-signin" action="{{ url_for('register') }}{% if 'next' in request.args %}?next={{ request.args.get('next') }}{% endif %}" method="POST">
+        <h2 class="form-signin-heading">Register</h2>
+        <input id="username" name="username" type="text" class="form-control" placeholder="Username" />
+        <input id="password" name="password" type="password" class="form-control" placeholder="Password" />
+        <input id="password2" name="password2" type="password" class="form-control" placeholder="Repeat password" />
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+    </form>
+</div>
+{% endblock %}

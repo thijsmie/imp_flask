@@ -24,7 +24,7 @@
                 {% for relation in pagination.items %}
                     <tr>
                         <td>{{ relation.id }}</td>
-                        <td>{{ relation.name }}</td>
+                        <td><a href="{{ url_for('.relation', relation_id=relation.id) }}">{{ relation.name }}</a></td>
                         <td>{{ relation.email }}</td>
                         <td><input type="checkbox" disabled="" {% if relation.send_transaction %}checked=""{% endif %} /></td>
                         <td><input type="checkbox" disabled="" {% if relation.send_transaction_updates %}checked=""{% endif %} /></td>

@@ -22,7 +22,7 @@ class IllegalProductAdaption(Exception):
 
 
 class Product(Base):
-    name = Column(String(80))
+    name = Column(String(80), unique=True)
     amount = Column(Integer)
     value = Column(Integer)
 

@@ -2,9 +2,10 @@
 
 {% block container %}
 <div class="col-md-8">
-    <div class="jumbotron">
-        <h1>Inventory management program</h1>
-    </div>
+    <blockquote class="blockquote-reverse">
+  <p>To give real service you must add something which cannot be bought or measured with money, and that is sincerity and integrity.</p>
+  <small><cite title="Source Title">Douglas Adams</cite></small>
+</blockquote>
 </div>
 <div class="col-md-4">
     <form class="form-signin" action="{{ url_for('home.index.login') }}{% if 'next' in request.args %}?next={{ request.args.get('next') }}{% endif %}" method="POST">
